@@ -73,9 +73,11 @@ public class GameplayPanel extends JPanel implements Runnable {
 
     //Affichage du jeu : on affiche l'image avec le rendu
     public void draw() {
-        Graphics g2 = this.getGraphics();
-        g2.drawImage(img, 0, 0, width, height, null);
-        g2.dispose();
+        if(running == true) {
+            Graphics g2 = this.getGraphics();
+            g2.drawImage(img, 0, 0, width, height, null);
+            g2.dispose();
+        }
     }
 
     @Override
@@ -138,6 +140,14 @@ public class GameplayPanel extends JPanel implements Runnable {
 
                 now = System.nanoTime();
             }
+        }
+    }
+
+    public void stopGame() {
+        running = false;
+        if (thread != null) {
+            thread.interrupt();
+            thread = null;
         }
     }
 }

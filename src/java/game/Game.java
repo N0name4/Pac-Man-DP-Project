@@ -10,6 +10,7 @@ import game.utils.CollisionDetector;
 import game.utils.CsvReader;
 import game.utils.KeyHandler;
 
+import javax.swing.*;
 import java.awt.*;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -148,10 +149,25 @@ public class Game implements Observer {
     @Override
     public void updateGhostCollision(Ghost gh) {
         if (gh.getState() instanceof FrightenedMode) {
-            gh.getState().eaten(); //S'il existe une transition particulière quand le fantôme est mangé, son état change en conséquence
-        }else if (!(gh.getState() instanceof EatenMode)) {
-            System.out.println("Game over !\nScore : " + GameLauncher.getUIPanel().getScore()); //Quand Pacman rentre en contact avec un Fantôme qui n'est ni effrayé, ni mangé, c'est game over !
-            System.exit(0); //TODO
+            gh.getState().eaten();
+        } else if (!(gh.getState() instanceof EatenMode)) {
+            System.out.println("Game over !\nScore : " + GameLauncher.getUIPanel().getScore());
+            /*
+            * 여기서 게임 중단.
+            * 스레드를 멈추고 프레임을 종료시킴
+            * */
+            new Thread(() -> {
+                if (GameLauncher.getGameplayPanel() != null) {
+                    GameLauncher.getGameplayPanel().stopGame();
+                }
+                SwingUtilities.invokeLater(() -> {
+                    GameLauncher.frameDisposer();
+                });
+            }).start();
+
+            firstInput = false;
+
+            GameLauncher.MainPage();
         }
     }
 
