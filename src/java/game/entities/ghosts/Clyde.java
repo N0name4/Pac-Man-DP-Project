@@ -1,6 +1,7 @@
 package game.entities.ghosts;
 
 import game.ghostStrategies.ClydeStrategy;
+import game.ghostStrategies.LowPowerStrategy;
 
 //Classe concrète de Clyde (le fantôme jaune)
 public class Clyde extends Ghost {
