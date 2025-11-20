@@ -19,10 +19,7 @@ public class EatenMode extends GhostState{
     //Dans cet état, la position ciblée est une case au milieu de la maison des fantômes
     @Override
     public int[] getTargetPosition(){
-        int[] position = new int[2];
-        position[0] = 208;
-        position[1] = 200;
-        return position;
+        return ghost.getStrategy().getEatenTargetPosition();
     }
 
     //Même chose que la méthode de la classe abstraite, mais on ignore ici les collisions avec les murs de la maison des fantômes
