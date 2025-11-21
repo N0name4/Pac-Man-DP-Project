@@ -1,6 +1,7 @@
 package game.entities.ghosts;
 
 import game.Game;
+import game.LevelBuilder.DifficultyParams;
 import game.entities.MovingEntity;
 import game.ghostStates.*;
 import game.ghostStrategies.IGhostStrategy;
@@ -30,8 +31,14 @@ public abstract class Ghost extends MovingEntity {
 
     protected IGhostStrategy strategy;
 
-    public Ghost(int xPos, int yPos, String spriteName) {
-        super(32, xPos, yPos, 2, spriteName, 2, 0.1f);
+    // Difficulty Parameter
+    protected final DifficultyParams difficultyParams;
+
+    public Ghost(int xPos, int yPos, String spriteName, DifficultyParams difficultyParams) {
+        super(32, xPos, yPos, difficultyParams.getGhostSpeed(), spriteName, 2, 0.1f);
+
+        // DifficultyParam init
+        this.difficultyParams = difficultyParams;
 
         //Création des différents états des fantômes
         chaseMode = new ChaseMode(this);
@@ -100,7 +107,8 @@ public abstract class Ghost extends MovingEntity {
         if (state == frightenedMode) {
             frightenedTimer++;
 
-            if (frightenedTimer >= (60 * 7)) {
+            // Original 60 * 7 -> Difficulty Parameter
+            if (frightenedTimer >= difficultyParams.getFrightenedTimer()) {
                 state.timerFrightenedModeOver();
             }
         }
@@ -110,7 +118,8 @@ public abstract class Ghost extends MovingEntity {
         if (state == chaseMode || state == scatterMode) {
             modeTimer++;
 
-            if ((isChasing && modeTimer >= (60 * 20)) || (!isChasing && modeTimer >= (60 * 5))) {
+            // Original 60 * 20 , 60 * 5
+            if ((isChasing && modeTimer >= difficultyParams.getChaseTimer()) || (!isChasing && modeTimer >= difficultyParams.getScatterTimer())) {
                 state.timerModeOver();
                 isChasing = !isChasing;
             }

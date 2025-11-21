@@ -1,5 +1,6 @@
 package game;
 
+import game.LevelBuilder.DifficultyParams;
 import game.entities.*;
 import game.entities.ghosts.Blinky;
 import game.entities.ghosts.Ghost;
@@ -27,8 +28,11 @@ public class Game implements Observer {
 
     private static boolean firstInput = false;
 
-    public Game(){
+    private final DifficultyParams difficultyParams;
+
+    public Game(DifficultyParams difficultyParams){
         //Initialisation du jeu
+        this.difficultyParams = difficultyParams;
 
         //Chargement du fichier csv du niveau
         List<List<String>> data = null;
@@ -51,7 +55,7 @@ public class Game implements Observer {
                 if (dataChar.equals("x")) { //Création des murs
                     objects.add(new Wall(xx * cellSize, yy * cellSize));
                 }else if (dataChar.equals("P")) { //Création de Pacman
-                    pacman = new Pacman(xx * cellSize, yy * cellSize);
+                    pacman = new Pacman(xx * cellSize, yy * cellSize, difficultyParams);
                     pacman.setCollisionDetector(collisionDetector);
 
                     //Enregistrement des différents observers de Pacman
@@ -73,7 +77,7 @@ public class Game implements Observer {
                             break;
                     }
 
-                    Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize);
+                    Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize, difficultyParams);
                     ghosts.add(ghost);
                     if (dataChar.equals("b")) {
                         blinky = (Blinky) ghost;

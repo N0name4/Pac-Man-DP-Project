@@ -1,12 +1,13 @@
 package game.ghostFactory;
 
+import game.LevelBuilder.DifficultyParams;
 import game.entities.ghosts.Ghost;
 import game.entities.ghosts.Inky;
 
 //Factory concrète pour créer des fantômes Inky
 public class InkyFactory extends AbstractGhostFactory {
     @Override
-    public Ghost makeGhost(int xPos, int yPos) {
-        return new Inky(xPos, yPos);
+    public Ghost makeGhost(int xPos, int yPos, DifficultyParams difficultyParams) {
+        return new Inky(xPos, yPos, difficultyParams);
     }
 }

@@ -1,6 +1,7 @@
 package game.entities;
 
 import game.Game;
+import game.LevelBuilder.DifficultyParams;
 import game.Observer;
 import game.Sujet;
 import game.entities.ghosts.Ghost;
@@ -16,8 +17,8 @@ public class Pacman extends MovingEntity implements Sujet {
     private CollisionDetector collisionDetector;
     private List<Observer> observerCollection;
 
-    public Pacman(int xPos, int yPos) {
-        super(32, xPos, yPos, 2, "pacman.png", 4, 0.3f);
+    public Pacman(int xPos, int yPos, DifficultyParams difficultyParams) {
+        super(32, xPos, yPos, difficultyParams.getPacmanSpeed(), "pacman.png", 4, 0.3f);
         observerCollection = new ArrayList<>();
     }
 

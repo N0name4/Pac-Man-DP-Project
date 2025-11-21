@@ -1,5 +1,6 @@
 package game;
 
+import game.LevelBuilder.DifficultyParams;
 import game.utils.KeyHandler;
 
 import javax.imageio.ImageIO;
@@ -50,7 +51,8 @@ public class GameplayPanel extends JPanel implements Runnable {
 
         key = new KeyHandler(this);
 
-        game = new Game();
+        DifficultyParams param = DifficultyParams.easyLevel();
+        game = new Game(param);
     }
 
     //mise à jour du jeu
