@@ -78,16 +78,19 @@ public class GameLauncher {
         level1.addActionListener(e -> {
             level = 1;
             System.out.println("level " +level+ " started...");
+            mainFrame.dispose();
             startGame();
         });
         level2.addActionListener(e -> {
             level = 2;
             System.out.println("level " +level+ " started...");
+            mainFrame.dispose();
             startGame();
         });
         level3.addActionListener(e -> {
             level = 3;
             System.out.println("level " +level+ " started...");
+            mainFrame.dispose();
             startGame();
         });
 
