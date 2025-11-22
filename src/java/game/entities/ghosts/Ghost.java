@@ -147,4 +147,9 @@ public abstract class Ghost extends MovingEntity {
         }
 
     }
+
+    public void resetInitValue(int xPos, int yPos) {
+        state = houseMode;
+        super.entityResetPosition(xPos,yPos);
+    }
 }

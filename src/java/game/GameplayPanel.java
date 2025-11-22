@@ -20,24 +20,25 @@ public class GameplayPanel extends JPanel implements Runnable {
     private Image backgroundImage;
 
     private KeyHandler key;
-
+    private GameDirector gameDirector;
     private Game game;
 
-    public GameplayPanel(int width, int height) throws IOException {
+    public GameplayPanel(int width, int height, int level) throws IOException {
         this.width = width;
         this.height = height;
         setPreferredSize(new Dimension(width, height));
         setFocusable(true);
         requestFocus();
         backgroundImage = ImageIO.read(getClass().getClassLoader().getResource("img/background.png"));
+        gameDirector = new GameDirector(level);
     }
 
     @Override
     public void addNotify() {
         super.addNotify();
-
         if (thread == null) {
             thread = new Thread(this, "GameThread");
+            running = true;
             thread.start();
         }
     }
@@ -47,10 +48,8 @@ public class GameplayPanel extends JPanel implements Runnable {
         running = true;
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         g = (Graphics2D) img.getGraphics();
-
         key = new KeyHandler(this);
-
-        game = new Game();
+        game = new Game(gameDirector);
     }
 
     //mise à jour du jeu
@@ -134,10 +133,10 @@ public class GameplayPanel extends JPanel implements Runnable {
 
                 try {
                     Thread.sleep(1);
-                } catch (Exception e) {
-                    System.err.println("ERROR yielding thread");
+                } catch (InterruptedException e) {
+                    System.err.println("Thread interrupted, exiting game loop...");
+                    return;
                 }
-
                 now = System.nanoTime();
             }
         }
@@ -145,7 +144,7 @@ public class GameplayPanel extends JPanel implements Runnable {
 
     public void stopGame() {
         running = false;
-        if (thread != null) {
+        if (thread != null && thread.isAlive()) {
             thread.interrupt();
             thread = null;
         }

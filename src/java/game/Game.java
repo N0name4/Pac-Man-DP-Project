@@ -28,16 +28,13 @@ public class Game implements Observer {
 
     private static boolean firstInput = false;
 
-    public Game(){
+    public Game(GameDirector gameDirector){
         //Initialisation du jeu
 
         //Chargement du fichier csv du niveau
-        List<List<String>> data = null;
-        try {
-            data = new CsvReader().parseCsv(getClass().getClassLoader().getResource("level/level.csv").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        List<List<String>> data = gameDirector.getMap();
+        int ghostNum = gameDirector.getGhostNumber();
+
         int cellsPerRow = data.get(0).size();
         int cellsPerColumn = data.size();
         int cellSize = 8;
@@ -59,25 +56,34 @@ public class Game implements Observer {
                     pacman.registerObserver(GameLauncher.getUIPanel());
                     pacman.registerObserver(this);
                 }else if (dataChar.equals("b") || dataChar.equals("p") || dataChar.equals("i") || dataChar.equals("c")) { //Création des fantômes en utilisant les différentes factories
-                    switch (dataChar) {
-                        case "b":
-                            abstractGhostFactory = new BlinkyFactory();
-                            break;
-                        case "p":
-                            abstractGhostFactory = new PinkyFactory();
-                            break;
-                        case "i":
-                            abstractGhostFactory = new InkyFactory();
-                            break;
-                        case "c":
-                            abstractGhostFactory = new ClydeFactory();
-                            break;
-                    }
+                    if(ghostNum > 0) {
+                        /*
+                        * 고스트 숫자 조절은 GameDirector로부터 전달받은 ghostNum을 생성시마다 1씩 줄이는 방식
+                        * */
+                        switch (dataChar) {
+                            case "b":
+                                abstractGhostFactory = new BlinkyFactory();
+                                ghostNum--;
+                                break;
+                            case "p":
+                                abstractGhostFactory = new PinkyFactory();
+                                ghostNum--;
+                                break;
+                            case "i":
+                                abstractGhostFactory = new InkyFactory();
+                                ghostNum--;
+                                break;
+                            case "c":
+                                abstractGhostFactory = new ClydeFactory();
+                                ghostNum--;
+                                break;
+                        }
 
-                    Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize);
-                    ghosts.add(ghost);
-                    if (dataChar.equals("b")) {
-                        blinky = (Blinky) ghost;
+                        Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize);
+                        ghosts.add(ghost);
+                        if (dataChar.equals("b")) {
+                            blinky = (Blinky) ghost;
+                        }
                     }
                 }else if (dataChar.equals(".")) { //Création des PacGums
                     objects.add(new PacGum(xx * cellSize, yy * cellSize));
@@ -156,13 +162,13 @@ public class Game implements Observer {
             * 여기서 게임 중단.
             * 스레드를 멈추고 프레임을 종료시킴
             * */
+            JOptionPane.showMessageDialog(null, "Game over !\nyour score: " + GameLauncher.getUIPanel().getScore());
+
             new Thread(() -> {
                 if (GameLauncher.getGameplayPanel() != null) {
                     GameLauncher.getGameplayPanel().stopGame();
                 }
-                SwingUtilities.invokeLater(() -> {
-                    GameLauncher.frameDisposer();
-                });
+                GameLauncher.frameDisposer();
             }).start();
 
             firstInput = false;

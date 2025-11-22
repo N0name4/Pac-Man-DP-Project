@@ -43,4 +43,11 @@ public abstract class Entity {
     }
 
     public abstract Rectangle getHitbox();
+
+    public void entityResetPosition(int xPos, int yPos) {
+        this.xPos = xPos;
+        this.yPos = yPos;
+        destroyed = false;
+        System.out.println("______________Entity is Reseted!!");
+    }
 }
