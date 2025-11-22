@@ -1,6 +1,6 @@
 package game.ghostFactory;
 
-import game.LevelBuilder.DifficultyParams;
+import game.levelBuilder.DifficultyParams;
 import game.entities.ghosts.Ghost;
 import game.entities.ghosts.Inky;
 

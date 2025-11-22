@@ -1,7 +1,7 @@
 package game.entities;
 
 import game.Game;
-import game.LevelBuilder.DifficultyParams;
+import game.levelBuilder.DifficultyParams;
 import game.Observer;
 import game.Sujet;
 import game.entities.ghosts.Ghost;

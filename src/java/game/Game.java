@@ -1,6 +1,6 @@
 package game;
 
-import game.LevelBuilder.DifficultyParams;
+import game.levelBuilder.DifficultyParams;
 import game.entities.*;
 import game.entities.ghosts.Blinky;
 import game.entities.ghosts.Ghost;

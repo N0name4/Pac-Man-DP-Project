@@ -1,6 +1,6 @@
 package game.entities.ghosts;
 
-import game.LevelBuilder.DifficultyParams;
+import game.levelBuilder.DifficultyParams;
 import game.ghostStrategies.PinkyStrategy;
 
 //Classe concrète de Pinky (le fantôme rose)

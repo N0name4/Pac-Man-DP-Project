@@ -1,7 +1,7 @@
 package game.entities.ghosts;
 
 import game.Game;
-import game.LevelBuilder.DifficultyParams;
+import game.levelBuilder.DifficultyParams;
 import game.entities.MovingEntity;
 import game.ghostStates.*;
 import game.ghostStrategies.IGhostStrategy;
