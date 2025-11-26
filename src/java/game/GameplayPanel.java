@@ -22,7 +22,15 @@ public class GameplayPanel extends JPanel implements Runnable {
 
     private KeyHandler key;
 
+    // Game Object
+    private GameDirector gameDirector;
     private Game game;
+
+    // Overlay Part
+    private String overlayText = null;
+    private int overlayTimer = 0;
+    private boolean readyInputFlag = false;
+    private static final int OVERLAY_FRAMES = 120;
 
     public GameplayPanel(int width, int height) throws IOException {
         this.width = width;
@@ -51,33 +59,92 @@ public class GameplayPanel extends JPanel implements Runnable {
 
         key = new KeyHandler(this);
 
-        GameDirector gameDirector = new GameDirector();
-        game = gameDirector.startRound();
+        gameDirector = new GameDirector();
+        gameDirector.setGameplayPanel(this);
+        gameDirector.startFirstRound();
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+
+        this.overlayText = "READY!";
+        this.readyInputFlag = true;
+        this.overlayTimer = 0;
+    }
+
+    // Clear Overlay
+    public void showRoundClearOverlay() {
+        this.overlayText = "ROUND CLEARED!";
+        this.overlayTimer = OVERLAY_FRAMES;
+    }
+
+    // GameOver Overlay
+    public void showGameOverOverlay() {
+        this.overlayText = "GAME OVER";
+        this.overlayTimer = OVERLAY_FRAMES;
+    }
+
+    private void updateOverlay() {
+        if (readyInputFlag) {
+            if (Game.getFirstInput()) {
+                overlayText = null;
+                readyInputFlag = false;
+            }
+            return;
+        }
+
+        if (overlayTimer > 0) {
+            overlayTimer--;
+            if (overlayTimer == 0) overlayText = null;
+        }
+    }
+
+    private void renderOverlay(Graphics2D g) {
+        if (overlayText == null) return;
+
+        g.setColor(new Color(0, 0, 0, 150));
+        int boxHeight = 80;
+        int boxY = height / 2 - boxHeight / 2;
+        g.fillRect(0, boxY, width, boxHeight);
+
+        g.setColor(Color.WHITE);
+        g.setFont(g.getFont().deriveFont(Font.BOLD, 24f));
+        FontMetrics fm = g.getFontMetrics();
+        int textWidth = fm.stringWidth(overlayText);
+        int textX = (width - textWidth) / 2;
+        int textY = height / 2 + fm.getAscent() / 2 - 4;
+
+        g.drawString(overlayText, textX, textY);
     }
 
     //mise à jour du jeu
     public void update() {
-        game.update();
+        if (game != null) game.update();
+        updateOverlay();
     }
 
     //gestion des inputs
     public void input(KeyHandler key) {
-        game.input(key);
+        if (game != null && key != null) game.input(key);
     }
 
     //"rendu du jeu" ; on prépare ce qui va être affiché en dessinant sur une "image" : un fond et les entités du jeu au dessus
     public void render() {
         if (g != null) {
             g.drawImage(backgroundImage, 0, 0, width, height, null);
-            game.render(g);
+            if (game != null) game.render(g);
         }
+        renderOverlay(g);
     }
 
     //Affichage du jeu : on affiche l'image avec le rendu
     public void draw() {
         Graphics g2 = this.getGraphics();
-        g2.drawImage(img, 0, 0, width, height, null);
-        g2.dispose();
+
+        if (g2 != null) {
+            g2.drawImage(img, 0, 0, width, height, null);
+            g2.dispose();
+        }
     }
 
     @Override

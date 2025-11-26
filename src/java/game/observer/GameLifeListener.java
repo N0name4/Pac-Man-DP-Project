@@ -1,4 +1,6 @@
-package game;
+package game.observer;
+
+import game.Game;
 
 public interface GameLifeListener {
 

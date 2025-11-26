@@ -2,8 +2,8 @@ package game.entities;
 
 import game.Game;
 import game.levelBuilder.DifficultyParams;
-import game.Observer;
-import game.Sujet;
+import game.observer.Observer;
+import game.observer.Sujet;
 import game.entities.ghosts.Ghost;
 import game.utils.CollisionDetector;
 import game.utils.KeyHandler;
