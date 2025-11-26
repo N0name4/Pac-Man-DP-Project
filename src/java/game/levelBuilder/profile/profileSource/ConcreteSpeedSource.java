@@ -12,7 +12,7 @@ public class ConcreteSpeedSource implements SpeedSource{
     public ConcreteSpeedSource() {
         table.put("EasySpeed", new SpeedProfile(2, 1));
         table.put("NormalSpeed", new SpeedProfile(2, 2));
-        table.put("HardSpeed", new SpeedProfile(2, 3));
+        table.put("HardSpeed", new SpeedProfile(2, 4));
     }
 
     @Override

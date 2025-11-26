@@ -12,11 +12,13 @@ public class RoundTemplate {
     // Difficulty Parameter
     private final String speedProfileId;
     private final String timerProfileId;
+    private final String scoreRuleProfileId;
 
-    public RoundTemplate(int roundNumber, String speedProfileId, String timerProfileId) {
+    public RoundTemplate(int roundNumber, String speedProfileId, String timerProfileId, String scoreRuleProfileId) {
         this.roundNumber = roundNumber;
         this.speedProfileId = speedProfileId;
         this.timerProfileId = timerProfileId;
+        this.scoreRuleProfileId = scoreRuleProfileId;
     }
 
     public int getRoundNumber() {
@@ -29,5 +31,9 @@ public class RoundTemplate {
 
     public String getTimerProfileId() {
         return timerProfileId;
+    }
+
+    public String getScoreRuleProfileId() {
+        return scoreRuleProfileId;
     }
 }

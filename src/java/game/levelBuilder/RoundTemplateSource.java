@@ -15,6 +15,7 @@ public class RoundTemplateSource {
                 .withRoundNumber(1)
                 .withSpeedProfile("EasySpeed")
                 .withTimerProfile("EasyTimer")
+                .withScoreRuleProfile("EasyScore")
                 .build());
 
         // Round 2
@@ -22,6 +23,7 @@ public class RoundTemplateSource {
                 .withRoundNumber(2)
                 .withSpeedProfile("EasySpeed")
                 .withTimerProfile("NormalTimer")
+                .withScoreRuleProfile("EasyScore")
                 .build());
 
         // Round 3
@@ -31,11 +33,19 @@ public class RoundTemplateSource {
                 .withTimerProfile("NormalTimer")
                 .build());
 
+        // Round 4
+        table.put(4, new RoundTemplateBuilder()
+                .withRoundNumber(4)
+                .withSpeedProfile("HardSpeed")
+                .withTimerProfile("HardTimer")
+                .build());
+
         // Default Round Template Setting
         defaultTemplate = new RoundTemplateBuilder()
                 .withRoundNumber(99)
                 .withSpeedProfile("HardSpeed")
                 .withTimerProfile("HardTimer")
+                .withScoreRuleProfile("HardScore")
                 .build();
     }
 

@@ -9,7 +9,7 @@ public class GameDirector {
 
     private final RoundTemplateSource roundTemplateSource;
     private final ParameterAssembler parameterAssembler;
-    private int currentRound = 1;
+    private int currentRound = 4;
 
     public GameDirector(
             RoundTemplateSource roundTemplateSource, ParameterAssembler parameterAssembler) {
