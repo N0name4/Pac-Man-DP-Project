@@ -1,5 +1,8 @@
 package game.levelBuilder;
 
+import game.levelBuilder.profile.GhostAIProfile;
+import game.levelBuilder.profile.profileSource.ClassicGhostAI;
+
 public class DifficultyParams {
 
     // Moving Entity Speed
@@ -16,6 +19,9 @@ public class DifficultyParams {
     private final int superPacGumScore;
     private final int ghostEatenScore;
 
+    // Ghost AI Strategy
+    private final GhostAIProfile ghostAIProfile;
+
     public DifficultyParams(Builder builder) {
         this.pacmanSpeed = builder.pacmanSpeed;
         this.ghostSpeed = builder.ghostSpeed;
@@ -25,6 +31,7 @@ public class DifficultyParams {
         this.pacGumScore = builder.pacGumScore;
         this.superPacGumScore = builder.superPacGumScore;
         this.ghostEatenScore = builder.ghostEatenScore;
+        this.ghostAIProfile = builder.ghostAIProfile;
     }
 
     public int getPacmanSpeed() {
@@ -59,6 +66,10 @@ public class DifficultyParams {
         return ghostEatenScore;
     }
 
+    public GhostAIProfile getGhostAIProfile() {
+        return ghostAIProfile;
+    }
+
     // Inline Builder Pattern
     public static class Builder {
         // Default Value Init
@@ -72,6 +83,8 @@ public class DifficultyParams {
         private int pacGumScore = 10;
         private int superPacGumScore = 100;
         private int ghostEatenScore = 500;
+
+        private GhostAIProfile ghostAIProfile;
 
         public Builder pacmanSpeed(int pacmanSpeed) {
             this.pacmanSpeed = pacmanSpeed;
@@ -113,12 +126,20 @@ public class DifficultyParams {
             return this;
         }
 
+        public Builder ghostAIProfile(GhostAIProfile ghostAIProfile) {
+            this.ghostAIProfile = ghostAIProfile;
+            return this;
+        }
+
         public DifficultyParams build() {
             if (pacmanSpeed <= 0) {
                 throw new IllegalArgumentException("Pacman Speed Exception");
             }
             if (ghostSpeed <= 0) {
                 throw new IllegalArgumentException("Ghost Speed Exception");
+            }
+            if (ghostAIProfile == null) {
+                ghostAIProfile = new ClassicGhostAI();
             }
 
             return new DifficultyParams(this);

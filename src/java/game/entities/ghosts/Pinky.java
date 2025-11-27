@@ -7,6 +7,6 @@ import game.ghostStrategies.PinkyStrategy;
 public class Pinky extends Ghost {
     public Pinky(int xPos, int yPos, DifficultyParams difficultyParams) {
         super(xPos, yPos, "pinky.png", difficultyParams);
-        setStrategy(new PinkyStrategy());
+        setStrategy(difficultyParams.getGhostAIProfile().createPinkyStrategy(this));
     }
 }

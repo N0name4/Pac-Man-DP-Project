@@ -1,5 +1,6 @@
 package game.levelBuilder;
 
+import game.levelBuilder.profile.GhostAIProfile;
 import game.levelBuilder.profile.ProfileSlot;
 
 import java.util.Map;
@@ -14,11 +15,14 @@ public class RoundTemplate {
     private final String timerProfileId;
     private final String scoreRuleProfileId;
 
-    public RoundTemplate(int roundNumber, String speedProfileId, String timerProfileId, String scoreRuleProfileId) {
+    private final GhostAIProfile ghostAIProfile;
+
+    public RoundTemplate(int roundNumber, String speedProfileId, String timerProfileId, String scoreRuleProfileId, GhostAIProfile ghostAIProfile) {
         this.roundNumber = roundNumber;
         this.speedProfileId = speedProfileId;
         this.timerProfileId = timerProfileId;
         this.scoreRuleProfileId = scoreRuleProfileId;
+        this.ghostAIProfile = ghostAIProfile;
     }
 
     public int getRoundNumber() {
@@ -35,5 +39,9 @@ public class RoundTemplate {
 
     public String getScoreRuleProfileId() {
         return scoreRuleProfileId;
+    }
+
+    public GhostAIProfile getGhostAIProfile() {
+        return ghostAIProfile;
     }
 }

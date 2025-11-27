@@ -7,6 +7,6 @@ import game.ghostStrategies.BlinkyStrategy;
 public class Blinky extends Ghost {
     public Blinky(int xPos, int yPos, DifficultyParams difficultyParams) {
         super(xPos, yPos, "blinky.png", difficultyParams);
-        setStrategy(new BlinkyStrategy());
+        setStrategy(difficultyParams.getGhostAIProfile().createBlinkyStrategy(this));
     }
 }

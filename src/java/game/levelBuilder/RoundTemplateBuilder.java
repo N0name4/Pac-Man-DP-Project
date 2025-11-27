@@ -1,5 +1,8 @@
 package game.levelBuilder;
 
+import game.levelBuilder.profile.GhostAIProfile;
+import game.levelBuilder.profile.profileSource.ClassicGhostAI;
+
 public class RoundTemplateBuilder {
 
     private int roundNumber;
@@ -8,11 +11,13 @@ public class RoundTemplateBuilder {
     private String speedProfileId;
     private String timerProfileId;
     private String scoreRuleProfileId;
+    private GhostAIProfile ghostAIProfile;
 
     // Default Value in RoundTemplate
     private static final String DEFAULT_SPEED = "NormalSpeed";
     private static final String DEFAULT_TIMER = "NormalTimer";
     private static final String DEFAULT_SCORE_RULE = "NormalScore";
+    private static final GhostAIProfile DEFAULT_GHOST_AI = new ClassicGhostAI(); // Not good Design
 
     public RoundTemplateBuilder withRoundNumber(int roundNumber) {
         this.roundNumber = roundNumber;
@@ -34,6 +39,11 @@ public class RoundTemplateBuilder {
         return this;
     }
 
+    public RoundTemplateBuilder withGhostAIProfile(GhostAIProfile ghostAIProfile) {
+        this.ghostAIProfile = ghostAIProfile;
+        return this;
+    }
+
     public RoundTemplate build() {
         if (roundNumber <= 0) roundNumber = 1;
 
@@ -41,12 +51,14 @@ public class RoundTemplateBuilder {
         if (speedProfileId == null) speedProfileId = DEFAULT_SPEED;
         if (timerProfileId == null) timerProfileId = DEFAULT_TIMER;
         if (scoreRuleProfileId == null) scoreRuleProfileId = DEFAULT_SCORE_RULE;
+        if (ghostAIProfile == null) ghostAIProfile = DEFAULT_GHOST_AI;
 
         return new RoundTemplate(
                 roundNumber,
                 speedProfileId,
                 timerProfileId,
-                scoreRuleProfileId
+                scoreRuleProfileId,
+                ghostAIProfile
         );
     }
 }

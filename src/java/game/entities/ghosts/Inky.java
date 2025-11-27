@@ -8,6 +8,6 @@ import game.ghostStrategies.InkyStrategy;
 public class Inky extends Ghost {
     public Inky(int xPos, int yPos, DifficultyParams difficultyParams) {
         super(xPos, yPos, "inky.png", difficultyParams);
-        setStrategy(new InkyStrategy(Game.getBlinky()));
+        setStrategy(difficultyParams.getGhostAIProfile().createInkyStrategy(this));
     }
 }

@@ -1,5 +1,7 @@
 package game.levelBuilder;
 
+import game.levelBuilder.profile.profileSource.ClassicGhostAI;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +48,7 @@ public class RoundTemplateSource {
                 .withSpeedProfile("HardSpeed")
                 .withTimerProfile("HardTimer")
                 .withScoreRuleProfile("HardScore")
+                .withGhostAIProfile(new ClassicGhostAI())
                 .build();
     }
 

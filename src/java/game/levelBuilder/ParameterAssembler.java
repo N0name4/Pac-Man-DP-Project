@@ -40,6 +40,7 @@ public class ParameterAssembler {
                 .pacGumScore(scoreRule.getPacGumScore())
                 .superPacGumScore(scoreRule.getSuperPacGumScore())
                 .ghostEatenScore(scoreRule.getGhostEatenScore())
+                .ghostAIProfile(template.getGhostAIProfile())
                 .build();
     }
 }

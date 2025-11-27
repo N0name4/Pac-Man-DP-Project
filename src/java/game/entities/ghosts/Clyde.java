@@ -7,6 +7,6 @@ import game.ghostStrategies.ClydeStrategy;
 public class Clyde extends Ghost {
     public Clyde(int xPos, int yPos, DifficultyParams difficultyParams) {
         super(xPos, yPos, "clyde.png", difficultyParams);
-        setStrategy(new ClydeStrategy(this));
+        setStrategy(difficultyParams.getGhostAIProfile().createClydeStrategy(this));
     }
 }
