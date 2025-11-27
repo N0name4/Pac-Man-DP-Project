@@ -1,9 +1,11 @@
 package game;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.awt.*;
+import java.net.URL;
 
 public class GameLauncher {
     private static UIPanel uiPanel;
@@ -29,33 +31,73 @@ public class GameLauncher {
 
     public static void MainPage() {
         System.out.println("\n메인페이지 진입_________________");
+
         mainFrame = new JFrame("Pacman Menu");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setSize(448, 496);
-        mainFrame.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
+        mainFrame.setLayout(new GridBagLayout());
 
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(10, 0, 10, 0);
+
+
+        URL imgURL = GameLauncher.class.getClassLoader().getResource("img/title.png");
+        ImageIcon titleIcon = new ImageIcon(imgURL);
+
+        JLabel titleLabel = new JLabel(titleIcon);
+        mainFrame.add(titleLabel, gbc);
+
+        Dimension buttonSize = new Dimension(200, 40);
+
+        gbc.gridy++;
         JButton startButton = new JButton("게임 시작");
+        startButton.setPreferredSize(buttonSize);
+        startButton.setFocusPainted(false);
+        startButton.setContentAreaFilled(false);
+        startButton.setOpaque(true);
+        startButton.setBorderPainted(true);
+
+        startButton.setBackground(Color.white);
+        startButton.setForeground(Color.BLACK);
+        mainFrame.add(startButton, gbc);
+
+        gbc.gridy++;
         JButton optionsButton = new JButton("옵션");
+        optionsButton.setPreferredSize(buttonSize);
+        optionsButton.setFocusPainted(false);
+        optionsButton.setContentAreaFilled(false);
+        optionsButton.setOpaque(true);
+        optionsButton.setBorderPainted(true);
+
+        optionsButton.setBackground(Color.white);
+        optionsButton.setForeground(Color.BLACK);
+        mainFrame.add(optionsButton, gbc);
+
+        gbc.gridy++;
         JButton exitButton = new JButton("종료");
+        exitButton.setPreferredSize(buttonSize);
+        exitButton.setFocusPainted(false);
+        exitButton.setContentAreaFilled(false);
+        exitButton.setOpaque(true);
+        exitButton.setBorderPainted(true);
 
-        mainFrame.add(startButton);
-        mainFrame.add(optionsButton);
-        mainFrame.add(exitButton);
+        exitButton.setBackground(Color.white);
+        exitButton.setForeground(Color.BLACK);
+        mainFrame.add(exitButton, gbc);
 
-
-        startButton.addActionListener((ActionEvent e) -> {
+        startButton.addActionListener(e -> {
             mainFrame.dispose();
             levelPage();
-            //startGame();
         });
 
-        optionsButton.addActionListener((ActionEvent e) -> {
+        optionsButton.addActionListener(e -> {
             optionMenu(mainFrame);
         });
 
-        exitButton.addActionListener((ActionEvent e) -> {
-            System.exit(0);
-        });
+        exitButton.addActionListener(e -> System.exit(0));
 
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setVisible(true);
@@ -64,42 +106,48 @@ public class GameLauncher {
     private static void levelPage() {
         mainFrame = new JFrame("Select Level");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setSize(448,496);
+        mainFrame.setSize(448, 496);
 
-        JPanel levelWindow = new JPanel();
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setBackground(Color.WHITE);
 
-        levelWindow.setSize(448,496);
-        levelWindow.setLayout(new FlowLayout());
-
-        JButton level1 = new JButton("1");
-        JButton level2 = new JButton("2");
-        JButton level3 = new JButton("3");
-
-        level1.addActionListener(e -> {
-            level = 1;
-            System.out.println("level " +level+ " started...");
-            mainFrame.dispose();
-            startGame();
-        });
-        level2.addActionListener(e -> {
-            level = 2;
-            System.out.println("level " +level+ " started...");
-            mainFrame.dispose();
-            startGame();
-        });
-        level3.addActionListener(e -> {
-            level = 3;
-            System.out.println("level " +level+ " started...");
-            mainFrame.dispose();
-            startGame();
-        });
+        URL imgURL = GameLauncher.class.getClassLoader().getResource("img/levelTitle.png");
+        ImageIcon titleIcon = new ImageIcon(imgURL);
+        JLabel titleLabel = new JLabel(titleIcon, JLabel.CENTER); // 중앙 정렬
+        mainPanel.add(titleLabel, BorderLayout.NORTH);
 
 
-        levelWindow.add(level1);
-        levelWindow.add(level2);
-        levelWindow.add(level3);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(3, 5, 15, 15)); // 행, 열, 수평간격, 수직간격
 
-        mainFrame.add(levelWindow);
+
+        for (int i = 1; i <= 15; i++) {
+            int levelNum = i;
+            JButton levelButton = new JButton(String.valueOf(i));
+            levelButton.addActionListener(e -> {
+                level = levelNum;
+                System.out.println("level " + level + " started...");
+                mainFrame.dispose();
+                startGame();
+            });
+            levelButton.setFocusPainted(false);
+            levelButton.setContentAreaFilled(false);
+            levelButton.setOpaque(true);
+            levelButton.setBorderPainted(true);
+
+            levelButton.setBackground(Color.white);
+            levelButton.setForeground(Color.BLACK);
+
+            buttonPanel.add(levelButton);
+        }
+
+        mainPanel.add(buttonPanel, BorderLayout.CENTER);
+        mainPanel.setBackground(Color.WHITE);
+        buttonPanel.setBackground(Color.WHITE);
+        mainFrame.getContentPane().setBackground(Color.WHITE);
+
+        mainFrame.add(mainPanel);
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setVisible(true);
     }
@@ -108,13 +156,10 @@ public class GameLauncher {
         System.out.println("\n옵션메뉴 진입________________");
         JDialog optionDialog = new JDialog(parent, "옵션 메뉴", true);
         optionDialog.setLayout(new BoxLayout(optionDialog.getContentPane(), BoxLayout.Y_AXIS));
-        optionDialog.setSize(500, 300);
+        optionDialog.setSize(500, 200);
 
         JPanel speedPanel = new JPanel();
         JPanel bottomButtons = new JPanel();
-
-        JCheckBox checkBox1 = new JCheckBox("체크박스 1번", true);
-        JCheckBox checkBox2 = new JCheckBox("체크박스 2번", true);
 
         JButton closeButton = new JButton("닫기");
         JButton saveButton = new JButton("저장하기");
@@ -123,9 +168,16 @@ public class GameLauncher {
         JLabel speedValueLabel = new JLabel("현재 속도: 50");
         JSlider speedSlider = new JSlider(0, 100, 50);
 
-        String[] difficulties = {"쉬움", "보통", "어려움"};
-        JComboBox<String> difficultyCombo = new JComboBox<>(difficulties);
-        difficultyCombo.setMaximumSize(new Dimension(200, 30));
+        JLabel colorLabel = new JLabel("팩맨 색상:");
+        String[] colors = {"노랑", "빨강", "파랑", "초록", "핑크", "하양"};
+        JComboBox<String> colorCombo = new JComboBox<>(colors);
+        colorCombo.setMaximumSize(new Dimension(200, 30));
+
+        JPanel colorPanel = new JPanel();
+        colorPanel.setLayout(new BoxLayout(colorPanel, BoxLayout.X_AXIS));
+        colorPanel.add(colorLabel);
+        colorPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        colorPanel.add(colorCombo);
 
         speedSlider.setMajorTickSpacing(20);
         speedSlider.setMinorTickSpacing(5);
@@ -139,13 +191,38 @@ public class GameLauncher {
         saveButton.addActionListener(e -> {
             int pacmanSpeed = speedSlider.getValue();
             int enemySpeed; //.getValue()형식으로 얻어내는거 생각해보기
-            System.out.println("저장버튼 클릭됨!!");
+
+            switch ((String)colorCombo.getSelectedItem()) {
+                case "노랑" :
+                    SkinSelector.set("PacmanSkin", "pacman.png");
+                    break;
+                case "빨강" :
+                    SkinSelector.set("PacmanSkin", "pacman_red.png");
+                    break;
+                case "파랑" :
+                    SkinSelector.set("PacmanSkin", "pacman_blue.png");
+                    break;
+                case "초록" :
+                    SkinSelector.set("PacmanSkin", "pacman_green.png");
+                    break;
+                case "핑크" :
+                    SkinSelector.set("PacmanSkin", "pacman_pink.png");
+                    break;
+                case "하양" :
+                    SkinSelector.set("PacmanSkin", "pacman_white.png");
+                    break;
+                default:
+                    break;
+            }
             /*
              *
              * 이곳에서 실제 옵션 변경이 일어나면 될것 같습니다.
              *
              *
              * */
+            System.out.println("저장버튼 클릭됨!!");
+            optionDialog.dispose();
+
             //entity.putValue(); 식으로 저장.
         });
 
@@ -155,19 +232,36 @@ public class GameLauncher {
         speedPanel.add(speedSlider, BorderLayout.CENTER);
         speedPanel.add(speedValueLabel, BorderLayout.SOUTH);
 
+        closeButton.setFocusPainted(false);
+        closeButton.setContentAreaFilled(false);
+        closeButton.setOpaque(true);
+        closeButton.setBorderPainted(true);
+        closeButton.setBackground(Color.white);
+        closeButton.setForeground(Color.BLACK);
+
+        saveButton.setFocusPainted(false);
+        saveButton.setContentAreaFilled(false);
+        saveButton.setOpaque(true);
+        saveButton.setBorderPainted(true);
+        saveButton.setBackground(Color.white);
+        saveButton.setForeground(Color.BLACK);
+
+        closeButton.setMaximumSize(new Dimension(100, 30));
+        saveButton.setMaximumSize(new Dimension(100, 30));
+
         bottomButtons.setLayout(new BoxLayout(bottomButtons, BoxLayout.X_AXIS));
         bottomButtons.setOpaque(false);
         bottomButtons.add(closeButton);
+        bottomButtons.add(Box.createRigidArea(new Dimension(5,0)));
         bottomButtons.add(saveButton);
+        bottomButtons.add(Box.createRigidArea(new Dimension(15,0)));
 
-        checkBox1.setOpaque(false);
-        checkBox2.setOpaque(false);
+        colorPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
-
-        optionDialog.add(checkBox1);
-        optionDialog.add(checkBox2);
-        optionDialog.add(difficultyCombo);
+        optionDialog.add(colorPanel);
+        optionDialog.add(Box.createRigidArea(new Dimension(0,15)));
         optionDialog.add(speedPanel);
+        optionDialog.add(Box.createRigidArea(new Dimension(0,15)));
         optionDialog.add(bottomButtons);
 
         optionDialog.setLocationRelativeTo(parent);
