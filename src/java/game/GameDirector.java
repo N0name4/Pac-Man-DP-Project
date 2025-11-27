@@ -12,6 +12,7 @@ public class GameDirector implements GameLifeListener {
     private final RoundTemplateSource roundTemplateSource;
     private final ParameterAssembler parameterAssembler;
 
+    // Game Objects
     private GameplayPanel gameplayPanel;
     private Game currentGame;
 
@@ -36,12 +37,14 @@ public class GameDirector implements GameLifeListener {
         this.gameplayPanel = panel;
     }
 
+    // First Round Starter Called by GameplayPanel init
     public void startFirstRound() {
         currentRound = 1;
         createGameForRound(currentRound);
     }
 
     private void createGameForRound(int roundNumber) {
+        // Old Game Subscribing Remove
         if (currentGame != null) currentGame.removeListener(this);
 
         // Get Round Template
@@ -58,22 +61,32 @@ public class GameDirector implements GameLifeListener {
         currentGame = newGame;
     }
 
+    // GameLifeListener Implementation
     @Override
     public void updateRoundClear(Game game) {
+        // Old Game request ignoring
         if (game != currentGame) return;
 
-        if (gameplayPanel != null) gameplayPanel.showRoundClearOverlay();
-
-        currentRound += 1;
-        createGameForRound(currentRound);
+        // show Overlay (GameplayPanel) -> ProceedRound (Callback)
+        gameplayPanel.showRoundClearOverlay(this::proceedRound);
     }
 
     @Override
     public void updateGameOver(Game game) {
         if (game != currentGame) return;
 
-        if (gameplayPanel != null) gameplayPanel.showGameOverOverlay();
+        gameplayPanel.showGameOverOverlay(this::restartRound);
+    }
 
+    // Go to Next Round -> Game Creating
+    private void proceedRound() {
+        currentRound += 1;
+        createGameForRound(currentRound);
+    }
+
+    // Remain to Current Round -> Game ReCreating
+    // Must Recreate Game because init all state and map for Game Objects
+    private void restartRound() {
         createGameForRound(currentRound);
     }
 }

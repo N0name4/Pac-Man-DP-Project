@@ -43,12 +43,28 @@ public class Game implements Observer, Pujet {
     // Score & GameEnding State
     private int score = 0;
     private boolean finished = false;
-    private static final int GAME_END_SCORE = 2000;
+    private static final int GAME_END_SCORE = 2000;  // Game Goal Score
 
     public Game(DifficultyParams difficultyParams){
         this.difficultyParams = difficultyParams;
         Game.setFirstInput(false);
         init();
+    }
+
+    public void update() {
+        for (Entity o: objects) {
+            if (!o.isDestroyed()) o.update();
+        }
+    }
+
+    public void input(KeyHandler k) {
+        pacman.input(k);
+    }
+
+    public void render(Graphics2D g) {
+        for (Entity o: objects) {
+            if (!o.isDestroyed()) o.render(g);
+        }
     }
 
     public static List<Wall> getWalls() {
@@ -59,28 +75,10 @@ public class Game implements Observer, Pujet {
         return objects;
     }
 
-    //Mise à jour de toutes les entités
-    public void update() {
-        for (Entity o: objects) {
-            if (!o.isDestroyed()) o.update();
-        }
-    }
-
-    //Gestion des inputs
-    public void input(KeyHandler k) {
-        pacman.input(k);
-    }
-
-    //Rendu de toutes les entités
-    public void render(Graphics2D g) {
-        for (Entity o: objects) {
-            if (!o.isDestroyed()) o.render(g);
-        }
-    }
-
     public static Pacman getPacman() {
         return pacman;
     }
+
     public static Blinky getBlinky() {
         return blinky;
     }
@@ -92,6 +90,7 @@ public class Game implements Observer, Pujet {
 
         pg.destroy();
         addScore(difficultyParams.getPacGumScore());
+
         checkRoundClear();
     }
 
@@ -102,6 +101,7 @@ public class Game implements Observer, Pujet {
         spg.destroy();
         addScore(difficultyParams.getSuperPacGumScore());
 
+        // State Change
         for (Ghost gh : ghosts) {
             gh.getState().superPacGumEaten();
         }
@@ -113,6 +113,7 @@ public class Game implements Observer, Pujet {
     public void updateGhostCollision(Ghost gh) {
         if (finished) return;
 
+        // State Change
         if (gh.getState() instanceof FrightenedMode) {
             gh.getState().eaten();
             addScore(difficultyParams.getGhostEatenScore());
@@ -123,6 +124,7 @@ public class Game implements Observer, Pujet {
         }
     }
 
+    // Score Domain Implementation (from UIPanel)
     private void addScore(int delta) {
         score += delta;
         updateScoreUI();

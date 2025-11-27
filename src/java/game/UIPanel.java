@@ -1,14 +1,10 @@
 package game;
 
-import game.entities.PacGum;
-import game.entities.SuperPacGum;
-import game.entities.ghosts.Ghost;
-import game.ghostStates.FrightenedMode;
-
 import javax.swing.*;
 import java.awt.*;
 
 // Score Adjustment Domain Removed
+// Only View Score Area
 public class UIPanel extends JPanel {
     public static int width;
     public static int height;
@@ -29,6 +25,7 @@ public class UIPanel extends JPanel {
         this.add(scoreLabel, BorderLayout.WEST);
     }
 
+    // Game call
     public void setScore(int score) {
         this.score = score;
         this.scoreLabel.setText("Score: " + score);

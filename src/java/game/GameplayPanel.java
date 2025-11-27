@@ -1,6 +1,5 @@
 package game;
 
-import game.levelBuilder.DifficultyParams;
 import game.utils.KeyHandler;
 
 import javax.imageio.ImageIO;
@@ -22,19 +21,23 @@ public class GameplayPanel extends JPanel implements Runnable {
 
     private KeyHandler key;
 
-    // Game Object
-    private GameDirector gameDirector;
+    // Current Game Object
     private Game game;
 
     // Overlay Part
-    private String overlayText = null;
-    private int overlayTimer = 0;
-    private boolean readyInputFlag = false;
-    private static final int OVERLAY_FRAMES = 120;
+    private String overlayText = null;  // Overlay Text
+    private int overlayTimer = 0;  // Overlay present Time
+    private boolean overlayActive = false;  // Overlay active flag
+    private boolean firstInput = false;  // User Round First input
+    private static final int OVERLAY_FRAMES = 120;  // Overlay Standard Duration - 2sec (60fps)
+
+    // Callback Method
+    private Runnable finishCallback;
 
     public GameplayPanel(int width, int height) throws IOException {
         this.width = width;
         this.height = height;
+
         setPreferredSize(new Dimension(width, height));
         setFocusable(true);
         requestFocus();
@@ -59,7 +62,8 @@ public class GameplayPanel extends JPanel implements Runnable {
 
         key = new KeyHandler(this);
 
-        gameDirector = new GameDirector();
+        // Game Director Initialization
+        GameDirector gameDirector = new GameDirector();
         gameDirector.setGameplayPanel(this);
         gameDirector.startFirstRound();
     }
@@ -67,38 +71,75 @@ public class GameplayPanel extends JPanel implements Runnable {
     public void setGame(Game game) {
         this.game = game;
 
+        // Ready Overlay
         this.overlayText = "READY!";
-        this.readyInputFlag = true;
+        this.overlayActive = true;
         this.overlayTimer = 0;
+        this.finishCallback = null;
+        this.firstInput = true;
     }
 
-    // Clear Overlay
-    public void showRoundClearOverlay() {
+    // Round Cleared Overlay
+    public void showRoundClearOverlay(Runnable clearFunc) {
         this.overlayText = "ROUND CLEARED!";
+        this.overlayActive = true;
         this.overlayTimer = OVERLAY_FRAMES;
+        this.finishCallback = clearFunc;
+        this.firstInput = false;
     }
 
-    // GameOver Overlay
-    public void showGameOverOverlay() {
+    // Game Over Overlay
+    public void showGameOverOverlay(Runnable overFunc) {
         this.overlayText = "GAME OVER";
+        this.overlayActive = true;
         this.overlayTimer = OVERLAY_FRAMES;
+        this.finishCallback = overFunc;
+        this.firstInput = false;
     }
 
+    public void update() {
+        // Overlay State - Round Clear / Game Over
+        if (overlayActive && !firstInput) {
+            updateOverlay();
+            return;
+        }
+
+        // Ready / Play State
+        if (game != null) game.update();
+        updateOverlay();
+    }
+
+    // Update Overlay Presentation for Several condition
     private void updateOverlay() {
-        if (readyInputFlag) {
+        // Ready State until First Key input
+        if (firstInput) {
             if (Game.getFirstInput()) {
                 overlayText = null;
-                readyInputFlag = false;
+                overlayActive = false;
+                firstInput = false;
             }
             return;
         }
 
-        if (overlayTimer > 0) {
-            overlayTimer--;
-            if (overlayTimer == 0) overlayText = null;
+        // Play State
+        if (!overlayActive) return;
+
+        // Overlay State
+        overlayTimer--;
+        if (overlayTimer <= 0) {
+            overlayActive = false;
+            overlayTimer = 0;
+            overlayText = null;
+
+            if (finishCallback != null) {
+                Runnable cb = finishCallback;
+                finishCallback = null;
+                cb.run();
+            }
         }
     }
 
+    // Rendering Overlay Messages
     private void renderOverlay(Graphics2D g) {
         if (overlayText == null) return;
 
@@ -117,12 +158,6 @@ public class GameplayPanel extends JPanel implements Runnable {
         g.drawString(overlayText, textX, textY);
     }
 
-    //mise à jour du jeu
-    public void update() {
-        if (game != null) game.update();
-        updateOverlay();
-    }
-
     //gestion des inputs
     public void input(KeyHandler key) {
         if (game != null && key != null) game.input(key);
@@ -134,6 +169,7 @@ public class GameplayPanel extends JPanel implements Runnable {
             g.drawImage(backgroundImage, 0, 0, width, height, null);
             if (game != null) game.render(g);
         }
+
         renderOverlay(g);
     }
 
