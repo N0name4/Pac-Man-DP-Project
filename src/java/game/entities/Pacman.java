@@ -20,6 +20,7 @@ public class Pacman extends MovingEntity implements Sujet {
 
     public Pacman(int xPos, int yPos, DifficultyParams difficultyParams) {
         super(32, xPos, yPos, difficultyParams.getPacmanSpeed(), SkinSelector.get("PacmanSkin"), 4, 0.3f);
+        super.spd = Integer.parseInt(SkinSelector.get("PacmanSpeed"));
         observerCollection = new ArrayList<>();
     }
 

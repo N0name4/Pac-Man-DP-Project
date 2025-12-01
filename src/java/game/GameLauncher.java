@@ -18,6 +18,7 @@ public class GameLauncher {
     public static void main(String[] args) {
         System.out.println("*** 프로그램 시작***");
         SkinSelector.set("PacmanSkin", "pacman.png"); //초기 팩맨 노란색 설정
+        SkinSelector.set("PacmanSpeed", "2"); //초기 속도 2
         MainPage();
         /*
          * 메인페이지 생성은 MainPage();
@@ -189,13 +190,14 @@ public class GameLauncher {
             invincibleMode.setSelected(true);
         }
 
-        speedSlider.setMajorTickSpacing(20);
-        speedSlider.setMinorTickSpacing(5);
+        speedSlider.setMajorTickSpacing(10);
+        speedSlider.setMinorTickSpacing(1);
         speedSlider.setPaintTicks(true);
         speedSlider.setPaintLabels(true);
         speedSlider.addChangeListener(e -> {
             int value = speedSlider.getValue();
             speedValueLabel.setText("현재 속도: " + value);
+            SkinSelector.set("PacmanSpeed", String.valueOf(1+value/60));
         });
         closeButton.addActionListener(e -> optionDialog.dispose());
         saveButton.addActionListener(e -> {
