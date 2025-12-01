@@ -8,6 +8,7 @@ public class SkinSelector {
     static {
         try (InputStream input = new FileInputStream("/config.properties")) {
             props.load(input);
+            System.out.println(input);
         } catch (IOException e) {
             System.out.println("config.properties 파일을 찾을 수 없습니다.");
             e.printStackTrace();

@@ -28,6 +28,11 @@ public abstract class MovingEntity extends Entity {
             e.printStackTrace();
         }
     }
+    public void movingEntityReset() {
+        xSpd = 0;
+        ySpd = 0;
+        direction = 0;
+    }
 
     @Override
     public void update() {

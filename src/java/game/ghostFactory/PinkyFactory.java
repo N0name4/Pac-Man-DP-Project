@@ -1,6 +1,7 @@
 package game.ghostFactory;
 
-import game.entities.ghosts.Clyde;
+import game.entities.ghosts.Blinky;
+import game.levelBuilder.DifficultyParams;
 import game.entities.ghosts.Ghost;
 import game.entities.ghosts.Pinky;
 
@@ -8,17 +9,15 @@ import game.entities.ghosts.Pinky;
 public class PinkyFactory extends AbstractGhostFactory {
     public static Ghost singletonPinky;
     @Override
-    public Ghost makeGhost(int xPos, int yPos) {
-
+    public Ghost makeGhost(int xPos, int yPos, DifficultyParams difficultyParams) {
         if(singletonPinky == null) {
-            singletonPinky = new Pinky(xPos, yPos);
-            System.out.println("_________________new pinky!");
+            //싱글톤 객체생성
+            singletonPinky = new Pinky(xPos, yPos, difficultyParams);
         }
         else {
-            singletonPinky.resetInitValue(xPos,yPos);
-            System.out.println("_________________pinky Singleton Reset!!");
+            //blinky위치 설정
+            singletonPinky.resetInitValue(xPos, yPos, difficultyParams);
         }
-
         return singletonPinky;
     }
 }

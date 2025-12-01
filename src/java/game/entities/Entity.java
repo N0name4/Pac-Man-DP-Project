@@ -48,6 +48,5 @@ public abstract class Entity {
         this.xPos = xPos;
         this.yPos = yPos;
         destroyed = false;
-        System.out.println("______________Entity is Reseted!!");
     }
 }

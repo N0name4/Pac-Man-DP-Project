@@ -1,9 +1,10 @@
 package game.entities;
 
 import game.Game;
-import game.Observer;
 import game.SkinSelector;
-import game.Sujet;
+import game.levelBuilder.DifficultyParams;
+import game.observer.Observer;
+import game.observer.Sujet;
 import game.entities.ghosts.Ghost;
 import game.utils.CollisionDetector;
 import game.utils.KeyHandler;
@@ -17,8 +18,8 @@ public class Pacman extends MovingEntity implements Sujet {
     private CollisionDetector collisionDetector;
     private List<Observer> observerCollection;
 
-    public Pacman(int xPos, int yPos) {
-        super(32, xPos, yPos, 2, SkinSelector.get("PacmanSkin"), 4, 0.3f);
+    public Pacman(int xPos, int yPos, DifficultyParams difficultyParams) {
+        super(32, xPos, yPos, difficultyParams.getPacmanSpeed(), SkinSelector.get("PacmanSkin"), 4, 0.3f);
         observerCollection = new ArrayList<>();
     }
 

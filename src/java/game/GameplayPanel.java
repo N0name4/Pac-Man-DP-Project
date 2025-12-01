@@ -20,25 +20,36 @@ public class GameplayPanel extends JPanel implements Runnable {
     private Image backgroundImage;
 
     private KeyHandler key;
-    private GameDirector gameDirector;
+
+    // Current Game Object
     private Game game;
 
-    public GameplayPanel(int width, int height, int level) throws IOException {
+    // Overlay Part
+    private String overlayText = null;  // Overlay Text
+    private int overlayTimer = 0;  // Overlay present Time
+    private boolean overlayActive = false;  // Overlay active flag
+    private boolean firstInput = false;  // User Round First input
+    private static final int OVERLAY_FRAMES = 120;  // Overlay Standard Duration - 2sec (60fps)
+
+    // Callback Method
+    private Runnable finishCallback;
+
+    public GameplayPanel(int width, int height) throws IOException {
         this.width = width;
         this.height = height;
+
         setPreferredSize(new Dimension(width, height));
         setFocusable(true);
         requestFocus();
         backgroundImage = ImageIO.read(getClass().getClassLoader().getResource("img/background.png"));
-        gameDirector = new GameDirector(level);
     }
 
     @Override
     public void addNotify() {
         super.addNotify();
+
         if (thread == null) {
             thread = new Thread(this, "GameThread");
-            running = true;
             thread.start();
         }
     }
@@ -48,32 +59,137 @@ public class GameplayPanel extends JPanel implements Runnable {
         running = true;
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         g = (Graphics2D) img.getGraphics();
+
         key = new KeyHandler(this);
-        game = new Game(gameDirector);
+
+        // Game Director Initialization
+        GameDirector gameDirector = new GameDirector();
+        gameDirector.setGameplayPanel(this);
+        gameDirector.startFirstRound();
     }
 
-    //mise à jour du jeu
+    public void setGame(Game game) {
+        this.game = game;
+
+        // Ready Overlay
+        this.overlayText = "READY!";
+        this.overlayActive = true;
+        this.overlayTimer = 0;
+        this.finishCallback = null;
+        this.firstInput = true;
+    }
+
+    // Round Cleared Overlay
+    public void showRoundClearOverlay(Runnable clearFunc) {
+        this.overlayText = "ROUND CLEARED!";
+        this.overlayActive = true;
+        this.overlayTimer = OVERLAY_FRAMES;
+        this.finishCallback = clearFunc;
+        this.firstInput = false;
+    }
+
+    // Game Over Overlay
+    public void showGameOverOverlay(Runnable overFunc) {
+        this.overlayText = "GAME OVER";
+        this.overlayActive = true;
+        this.overlayTimer = OVERLAY_FRAMES;
+        this.finishCallback = overFunc;
+        this.firstInput = false;
+    }
+
     public void update() {
-        game.update();
+        // Overlay State - Round Clear / Game Over
+        if (overlayActive && !firstInput) {
+            updateOverlay();
+            return;
+        }
+
+        // Ready / Play State
+        if (game != null) game.update();
+        updateOverlay();
+    }
+
+    // Update Overlay Presentation for Several condition
+    private void updateOverlay() {
+        // Ready State until First Key input
+        if (firstInput) {
+            if (Game.getFirstInput()) {
+                overlayText = null;
+                overlayActive = false;
+                firstInput = false;
+            }
+            return;
+        }
+
+        // Play State
+        if (!overlayActive) return;
+
+        // Overlay State
+        overlayTimer--;
+        if (overlayTimer <= 0) {
+            overlayActive = false;
+            overlayTimer = 0;
+            overlayText = null;
+
+            if (finishCallback != null) {
+                Runnable cb = finishCallback;
+                finishCallback = null;
+                cb.run();
+            }
+        }
+    }
+
+    // Rendering Overlay Messages
+    private void renderOverlay(Graphics2D g) {
+        if (overlayText == null) return;
+
+        g.setColor(new Color(0, 0, 0, 150));
+        int boxHeight = 80;
+        int boxY = height / 2 - boxHeight / 2;
+        g.fillRect(0, boxY, width, boxHeight);
+
+        g.setColor(Color.WHITE);
+        g.setFont(g.getFont().deriveFont(Font.BOLD, 24f));
+        FontMetrics fm = g.getFontMetrics();
+        int textWidth = fm.stringWidth(overlayText);
+        int textX = (width - textWidth) / 2;
+        int textY = height / 2 + fm.getAscent() / 2 - 4;
+
+        g.drawString(overlayText, textX, textY);
     }
 
     //gestion des inputs
     public void input(KeyHandler key) {
-        game.input(key);
+        if (game != null && key != null) game.input(key);
+        if (key.k_esc.isPressed) {
+            System.out.println("esc pressed");
+            this.stopGame();
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    GameLauncher.frameDisposer();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+            GameLauncher.MainPage();
+        }
     }
 
     //"rendu du jeu" ; on prépare ce qui va être affiché en dessinant sur une "image" : un fond et les entités du jeu au dessus
     public void render() {
         if (g != null) {
             g.drawImage(backgroundImage, 0, 0, width, height, null);
-            game.render(g);
+            if (game != null) game.render(g);
         }
+        renderOverlay(g);
     }
 
     //Affichage du jeu : on affiche l'image avec le rendu
     public void draw() {
-        if(running == true) {
-            Graphics g2 = this.getGraphics();
+        Graphics g2 = this.getGraphics();
+
+        if (g2 != null) {
             g2.drawImage(img, 0, 0, width, height, null);
             g2.dispose();
         }
@@ -133,10 +249,10 @@ public class GameplayPanel extends JPanel implements Runnable {
 
                 try {
                     Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    System.err.println("Thread interrupted, exiting game loop...");
-                    return;
+                } catch (Exception e) {
+                    System.err.println("failed yielding thread");
                 }
+
                 now = System.nanoTime();
             }
         }

@@ -1,5 +1,7 @@
 package game.ghostFactory;
 
+import game.entities.ghosts.Blinky;
+import game.levelBuilder.DifficultyParams;
 import game.entities.ghosts.Clyde;
 import game.entities.ghosts.Ghost;
 
@@ -7,16 +9,15 @@ import game.entities.ghosts.Ghost;
 public class ClydeFactory extends AbstractGhostFactory {
     public static Ghost singletonClyde;
     @Override
-    public Ghost makeGhost(int xPos, int yPos) {
+    public Ghost makeGhost(int xPos, int yPos, DifficultyParams difficultyParams) {
         if(singletonClyde == null) {
-            singletonClyde = new Clyde(xPos, yPos);
-            System.out.println("_________________new Clyde!");
+            //싱글톤 객체생성
+            singletonClyde = new Clyde(xPos, yPos, difficultyParams);
         }
         else {
-            singletonClyde.resetInitValue(xPos,yPos);
-            System.out.println("_________________Clyde Singleton Reset!!");
+            //blinky위치 설정
+            singletonClyde.resetInitValue(xPos, yPos, difficultyParams);
         }
-
         return singletonClyde;
     }
 }

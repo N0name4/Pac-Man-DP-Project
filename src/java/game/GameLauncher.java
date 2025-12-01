@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.awt.*;
 import java.net.URL;
 
+//Point d'entrée de l'application
 public class GameLauncher {
     private static UIPanel uiPanel;
     private static JFrame mainFrame;
@@ -16,13 +17,14 @@ public class GameLauncher {
 
     public static void main(String[] args) {
         System.out.println("*** 프로그램 시작***");
+        SkinSelector.set("PacmanSkin", "pacman.png"); //초기 팩맨 노란색 설정
         MainPage();
         /*
-        * 메인페이지 생성은 MainPage();
-        * 게임 시작은 startGame()
-        * 레벨 메뉴는 levelPage()
-        * 옵션 메뉴는 optionMenu() 안에 두었습니다.
-        * */
+         * 메인페이지 생성은 MainPage();
+         * 게임 시작은 startGame()
+         * 레벨 메뉴는 levelPage()
+         * 옵션 메뉴는 optionMenu() 안에 두었습니다.
+         * */
     }
     public static void frameDisposer() {
         gameplayPanel.stopGame();
@@ -106,7 +108,7 @@ public class GameLauncher {
     private static void levelPage() {
         mainFrame = new JFrame("Select Level");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setSize(448, 496);
+        mainFrame.setSize(448, 400);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
@@ -156,10 +158,13 @@ public class GameLauncher {
         System.out.println("\n옵션메뉴 진입________________");
         JDialog optionDialog = new JDialog(parent, "옵션 메뉴", true);
         optionDialog.setLayout(new BoxLayout(optionDialog.getContentPane(), BoxLayout.Y_AXIS));
-        optionDialog.setSize(500, 200);
+        optionDialog.setSize(500, 250);
 
         JPanel speedPanel = new JPanel();
         JPanel bottomButtons = new JPanel();
+        JPanel checkBoxPanel = new JPanel();
+
+        JCheckBox invincibleMode = new JCheckBox("Invincible");
 
         JButton closeButton = new JButton("닫기");
         JButton saveButton = new JButton("저장하기");
@@ -178,6 +183,11 @@ public class GameLauncher {
         colorPanel.add(colorLabel);
         colorPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         colorPanel.add(colorCombo);
+
+        String inv = SkinSelector.get("invincible");
+        if ("true".equals(inv)) {
+            invincibleMode.setSelected(true);
+        }
 
         speedSlider.setMajorTickSpacing(20);
         speedSlider.setMinorTickSpacing(5);
@@ -214,6 +224,12 @@ public class GameLauncher {
                 default:
                     break;
             }
+            if (invincibleMode.isSelected()) {
+                SkinSelector.set("invincible", "true");
+            }
+            if(!invincibleMode.isSelected()) {
+                SkinSelector.set("invincible", "false");
+            }
             /*
              *
              * 이곳에서 실제 옵션 변경이 일어나면 될것 같습니다.
@@ -231,6 +247,10 @@ public class GameLauncher {
         speedPanel.add(speedLabel, BorderLayout.NORTH);
         speedPanel.add(speedSlider, BorderLayout.CENTER);
         speedPanel.add(speedValueLabel, BorderLayout.SOUTH);
+
+        invincibleMode.setAlignmentX(Component.LEFT_ALIGNMENT);
+        checkBoxPanel.add(invincibleMode);
+        checkBoxPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
         closeButton.setFocusPainted(false);
         closeButton.setContentAreaFilled(false);
@@ -260,6 +280,8 @@ public class GameLauncher {
 
         optionDialog.add(colorPanel);
         optionDialog.add(Box.createRigidArea(new Dimension(0,15)));
+        optionDialog.add(checkBoxPanel);
+        optionDialog.add(Box.createRigidArea(new Dimension(0,15)));
         optionDialog.add(speedPanel);
         optionDialog.add(Box.createRigidArea(new Dimension(0,15)));
         optionDialog.add(bottomButtons);
@@ -276,7 +298,7 @@ public class GameLauncher {
         gameWindow = new JPanel();
 
         try {
-            gameplayPanel = new GameplayPanel(448, 496, level); // 레벨을 여기서 설정.
+            gameplayPanel = new GameplayPanel(448, 496); // 레벨을 여기서 설정.
             gameWindow.add(gameplayPanel);
         } catch (IOException e) {
             e.printStackTrace();
