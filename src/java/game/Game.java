@@ -40,7 +40,7 @@ public class Game implements Observer {
 
         //Chargement du fichier csv du niveau
         List<List<String>> data = null;
-        List<List<String>> data2 = null;
+        /*List<List<String>> data2 = null;
         try {
             data = new CsvReader().parseCsv(getClass().getClassLoader().getResource("level/level.csv").toURI());
         } catch (URISyntaxException e) {
@@ -51,7 +51,7 @@ public class Game implements Observer {
         
         cellsPerRow = data.get(0).size();  // 가로 (열 수)
         cellsPerColumn =  data.size(); // 세로 (행 수)*/
-        //data = new RandomLevelGenerator().generate(cellsPerRow, cellsPerColumn);
+        data = new RandomLevelGenerator().generate(cellsPerRow, cellsPerColumn);
         //data = new WFCLevelGenerator().generate(cellsPerRow, cellsPerColumn);
         cellsPerRow = data.get(0).size();
         cellsPerColumn = data.size();

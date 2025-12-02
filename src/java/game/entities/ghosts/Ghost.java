@@ -1,9 +1,11 @@
 package game.entities.ghosts;
 
 import game.Game;
+
 import game.entities.MovingEntity;
 import game.ghostStates.*;
 import game.ghostStrategies.IGhostStrategy;
+import game.entities.Wall;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -30,8 +32,20 @@ public abstract class Ghost extends MovingEntity {
 
     protected IGhostStrategy strategy;
 
+    protected int HouseX;
+    protected int HouseY;
+    protected int HouseExitX;
+    protected int HouseExitY;
+    
     public Ghost(int xPos, int yPos, String spriteName) {
         super(32, xPos, yPos, 2, spriteName, 2, 0.1f);
+
+        this.HouseX = xPos;
+        this.HouseY = yPos;
+
+        findHouseExit();
+        
+        System.out.println("집 : "+ HouseX +"," +HouseY + "Exit : " + HouseExitX +"," +HouseExitY);
 
         //Création des différents états des fantômes
         chaseMode = new ChaseMode(this);
@@ -117,12 +131,12 @@ public abstract class Ghost extends MovingEntity {
         }
 
         //Si le fantôme est sur la case juste au dessus de sa maison, l'état est notifié afin d'appliquer la transition adéquate
-        if (xPos == 208 && yPos == 168) {
+        if (xPos == HouseX && yPos == HouseY) {
             state.outsideHouse();
         }
 
         //Si le fantôme est sur la case au milieu sa maison, l'état est notifié afin d'appliquer la transition adéquate
-        if (xPos == 208 && yPos == 200) {
+        if (xPos == HouseX && yPos == HouseY) {
             state.insideHouse();
         }
 
@@ -147,4 +161,48 @@ public abstract class Ghost extends MovingEntity {
         }
 
     }
+    
+    private void findHouseExit()
+    {
+    	int cellSize = 8;
+    	
+    	int[][] directions = {
+    	            {0, -cellSize},   // 위
+    	            {cellSize, 0},    // 오른쪽
+    	            {0, cellSize},    // 아래
+    	            {-cellSize, 0}    // 왼쪽
+    	};
+    	        
+    	for (int[] dir : directions) {
+            int checkX = HouseX + dir[0];
+            int checkY = HouseY + dir[1];
+    	            
+    	            // 해당 위치에 벽이 없는지 확인
+            if (!isWallAt(checkX, checkY)) {
+            	HouseExitX = checkX;
+            	HouseExitY = checkY;
+    	                return;
+    	            }
+    	        }
+    	        
+    	        // 만약 사방이 다 막혔다면 (shouldn't happen) 위로 설정
+    	        HouseExitX = HouseX;
+    	        HouseExitY = HouseY - cellSize;
+    	    }
+    	    
+    	    private boolean isWallAt(int x, int y) {
+    	        for (Wall wall : Game.getWalls()) {
+    	            if (wall.getxPos() == x && wall.getyPos() == y) {
+    	                return true;
+    	            }
+    	        }
+    	        return false;
+    	    }
+
+    	    // Getter들...
+    	    public int getMyHouseX() { return HouseX; }
+    	    public int getMyHouseY() { return HouseY; }
+    	    public int getMyHouseExitX() { return HouseExitX; }
+    	    public int getMyHouseExitY() { return HouseExitY; }
 }
+

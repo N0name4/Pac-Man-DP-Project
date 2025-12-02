@@ -20,8 +20,8 @@ public class EatenMode extends GhostState{
     @Override
     public int[] getTargetPosition(){
         int[] position = new int[2];
-        position[0] = 208;
-        position[1] = 200;
+        position[0] = ghost.getMyHouseX();
+        position[1] = ghost.getMyHouseY();
         return position;
     }
 

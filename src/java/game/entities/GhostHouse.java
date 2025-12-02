@@ -6,3 +6,4 @@ public class GhostHouse extends Wall {
         super(xPos, yPos);
     }
 }
+	
