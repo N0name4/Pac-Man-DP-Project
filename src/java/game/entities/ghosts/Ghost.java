@@ -57,6 +57,13 @@ public abstract class Ghost extends MovingEntity {
             e.printStackTrace();
         }
     }
+    public void resetInitValue(int xPos, int yPos, DifficultyParams difficultyParams) {
+        super.entityResetPosition(xPos,yPos);
+        super.movingEntityReset();
+        super.spd=difficultyParams.getGhostSpeed();
+        state = houseMode;
+        setStrategy(difficultyParams.getGhostAIProfile().createBlinkyStrategy(this));
+    }
 
     //Méthodes pour les transitions entre les différents états
     public void switchChaseMode() {

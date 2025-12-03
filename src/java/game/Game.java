@@ -13,6 +13,7 @@ import game.observer.Pujet;
 import game.utils.CollisionDetector;
 import game.utils.CsvReader;
 import game.utils.KeyHandler;
+import game.SkinSelector;
 
 import java.awt.*;
 import java.net.URISyntaxException;
@@ -33,6 +34,7 @@ public class Game implements Observer, Pujet {
 
     // Game Start Inspection
     private static boolean firstInput = false;
+    private static boolean invincibleMode = false;
 
     // Game Overall Params Object
     private final DifficultyParams difficultyParams;
@@ -48,6 +50,12 @@ public class Game implements Observer, Pujet {
     public Game(DifficultyParams difficultyParams){
         this.difficultyParams = difficultyParams;
         Game.setFirstInput(false);
+        if(SkinSelector.get("invincible").equals("true")) {
+            invincibleMode = true;
+        }
+        else {
+            invincibleMode = false;
+        }
         init();
     }
 
@@ -113,14 +121,16 @@ public class Game implements Observer, Pujet {
     public void updateGhostCollision(Ghost gh) {
         if (finished) return;
 
-        // State Change
-        if (gh.getState() instanceof FrightenedMode) {
-            gh.getState().eaten();
-            addScore(difficultyParams.getGhostEatenScore());
-            checkRoundClear();
-        } else if (!(gh.getState() instanceof EatenMode)) {
-            finished = true;
-            notifyListenerGameOver();
+        if(!invincibleMode) {
+            // State Change
+            if (gh.getState() instanceof FrightenedMode) {
+                gh.getState().eaten();
+                addScore(difficultyParams.getGhostEatenScore());
+                checkRoundClear();
+            } else if (!(gh.getState() instanceof EatenMode)) {
+                finished = true;
+                notifyListenerGameOver();
+            }
         }
     }
 
@@ -195,7 +205,9 @@ public class Game implements Observer, Pujet {
         CollisionDetector collisionDetector = new CollisionDetector(this);
         AbstractGhostFactory abstractGhostFactory = null;
 
-        //Le niveau a une "grille", et pour chaque case du fichier csv, on affiche une entité parculière sur une case de la grille selon le caracère présent
+
+        long start = System.nanoTime(); //시간 측정용
+
         for(int xx = 0 ; xx < cellsPerRow ; xx++) {
             for(int yy = 0 ; yy < cellsPerColumn ; yy++) {
                 String dataChar = data.get(yy).get(xx);
@@ -237,6 +249,15 @@ public class Game implements Observer, Pujet {
                 }
             }
         }
+        long end = System.nanoTime();
+        long elapsedNs = end - start;
+        double elapsedMs = elapsedNs / 1_000_000.0;
+
+        System.out.println("_____________map creation time_____________");
+        System.out.println("ns: " + elapsedNs);
+        System.out.println(String.format("ms: %.3f", elapsedMs));
+
+
         objects.add(pacman);
         objects.addAll(ghosts);
 

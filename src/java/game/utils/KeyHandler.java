@@ -30,6 +30,7 @@ public class KeyHandler implements KeyListener {
     public Key k_down = new Key();
     public Key k_left = new Key();
     public Key k_right = new Key();
+    public Key k_esc = new Key(); //for break
 
     public KeyHandler(GameplayPanel game) {
         game.addKeyListener(this);
@@ -47,6 +48,9 @@ public class KeyHandler implements KeyListener {
         }
         if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
             k_down.toggle(pressed);
+        }
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            k_esc.toggle(pressed);
         }
     }
 

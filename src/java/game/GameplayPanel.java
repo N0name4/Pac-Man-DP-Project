@@ -161,6 +161,19 @@ public class GameplayPanel extends JPanel implements Runnable {
     //gestion des inputs
     public void input(KeyHandler key) {
         if (game != null && key != null) game.input(key);
+        if (key.k_esc.isPressed) {
+            System.out.println("esc pressed");
+            this.stopGame();
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    GameLauncher.frameDisposer();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+            GameLauncher.MainPage();
+        }
     }
 
     //"rendu du jeu" ; on prépare ce qui va être affiché en dessinant sur une "image" : un fond et les entités du jeu au dessus
@@ -169,7 +182,6 @@ public class GameplayPanel extends JPanel implements Runnable {
             g.drawImage(backgroundImage, 0, 0, width, height, null);
             if (game != null) game.render(g);
         }
-
         renderOverlay(g);
     }
 
@@ -238,11 +250,19 @@ public class GameplayPanel extends JPanel implements Runnable {
                 try {
                     Thread.sleep(1);
                 } catch (Exception e) {
-                    System.err.println("ERROR yielding thread");
+                    System.err.println("failed yielding thread");
                 }
 
                 now = System.nanoTime();
             }
+        }
+    }
+
+    public void stopGame() {
+        running = false;
+        if (thread != null && thread.isAlive()) {
+            thread.interrupt();
+            thread = null;
         }
     }
 }

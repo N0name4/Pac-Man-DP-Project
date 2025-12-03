@@ -68,7 +68,7 @@ public class EatenMode extends GhostState{
 
         if (new_xSpd == 0 && new_ySpd == 0) return;
 
-        if (java.lang.Math.abs(new_xSpd) != java.lang.Math.abs(new_ySpd)) {
+        if (Math.abs(new_xSpd) != Math.abs(new_ySpd)) {
             ghost.setxSpd(new_xSpd);
             ghost.setySpd(new_ySpd);
         } else {

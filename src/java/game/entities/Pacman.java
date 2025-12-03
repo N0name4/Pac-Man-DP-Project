@@ -1,6 +1,7 @@
 package game.entities;
 
 import game.Game;
+import game.SkinSelector;
 import game.levelBuilder.DifficultyParams;
 import game.observer.Observer;
 import game.observer.Sujet;
@@ -18,7 +19,8 @@ public class Pacman extends MovingEntity implements Sujet {
     private List<Observer> observerCollection;
 
     public Pacman(int xPos, int yPos, DifficultyParams difficultyParams) {
-        super(32, xPos, yPos, difficultyParams.getPacmanSpeed(), "pacman.png", 4, 0.3f);
+        super(32, xPos, yPos, difficultyParams.getPacmanSpeed(), SkinSelector.get("PacmanSkin"), 4, 0.3f);
+        super.spd = Integer.parseInt(SkinSelector.get("PacmanSpeed"));
         observerCollection = new ArrayList<>();
     }
 
