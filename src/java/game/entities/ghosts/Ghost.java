@@ -45,7 +45,6 @@ public abstract class Ghost extends MovingEntity {
 
         findHouseExit();
         
-        System.out.println("집 : "+ HouseX +"," +HouseY + "Exit : " + HouseExitX +"," +HouseExitY);
 
         //Création des différents états des fantômes
         chaseMode = new ChaseMode(this);
@@ -185,7 +184,6 @@ public abstract class Ghost extends MovingEntity {
     	            }
     	        }
     	        
-    	        // 만약 사방이 다 막혔다면 (shouldn't happen) 위로 설정
     	        HouseExitX = HouseX;
     	        HouseExitY = HouseY - cellSize;
     	    }
@@ -199,7 +197,6 @@ public abstract class Ghost extends MovingEntity {
     	        return false;
     	    }
 
-    	    // Getter들...
     	    public int getMyHouseX() { return HouseX; }
     	    public int getMyHouseY() { return HouseY; }
     	    public int getMyHouseExitX() { return HouseExitX; }

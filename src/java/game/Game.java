@@ -6,16 +6,13 @@ import game.entities.ghosts.Ghost;
 import game.ghostFactory.*;
 import game.ghostStates.EatenMode;
 import game.ghostStates.FrightenedMode;
+import game.map.RandomLevelGenerator;
 import game.utils.CollisionDetector;
-import game.utils.CsvReader;
 import game.utils.KeyHandler;
 
 import java.awt.*;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import game.utils.RandomLevelGenerator;
-import game.utils.WFCLevelGenerator;
 
 //Classe gérant le jeu en lui même
 public class Game implements Observer {

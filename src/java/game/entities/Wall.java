@@ -9,7 +9,6 @@ public class Wall extends StaticEntity {
     
     @Override
     public void render(Graphics2D g) {
-        // 어두운 파란 벽
         g.setColor(new Color(0, 0, 150));
         g.fillRect(this.xPos, this.yPos, this.size, this.size);
     }
