@@ -1,5 +1,7 @@
 package game;
 
+import game.levelBuilder.DifficultyParams;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -299,15 +301,24 @@ public class GameLauncher {
 
         gameWindow = new JPanel();
 
+
+        Game tempGame = new Game();
+
+        int cellsPerRow = tempGame.getCellsPerRow();
+        int cellsPerColumn = tempGame.getCellsPerColumn();
+        int cellSize = tempGame.getCellSize();
+
+        int gameWidth = cellsPerRow * cellSize;
+        int gameHeight = cellsPerColumn * cellSize;
+
         try {
-            gameplayPanel = new GameplayPanel(448, 496); // 레벨을 여기서 설정.
-            gameWindow.add(gameplayPanel);
+            gameWindow.add(new GameplayPanel(gameWidth,gameHeight, tempGame));
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        uiPanel = new UIPanel(256, 496);
+        uiPanel = new UIPanel(256, gameHeight);
         gameWindow.add(uiPanel);
+        tempGame.getPacman().registerObserver(uiPanel);
 
         mainFrame.setContentPane(gameWindow);
         mainFrame.setResizable(false);

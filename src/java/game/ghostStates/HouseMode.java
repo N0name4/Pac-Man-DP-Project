@@ -19,7 +19,10 @@ public class HouseMode extends GhostState{
     //Dans cet état, la position ciblée est la case juste au dessus de la maison des fantômes
     @Override
     public int[] getTargetPosition(){
-        return ghost.getStrategy().getHouseTargetPosition();
+        int[] position = new int[2];
+        position[0] = ghost.getMyHouseExitX();
+        position[1] = ghost.getMyHouseExitY();
+        return position;
     }
 
     //Même chose que la méthode de la classe abstraite, mais on ignore ici les collisions avec les murs de la maison des fantômes
