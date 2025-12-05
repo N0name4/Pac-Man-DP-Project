@@ -120,10 +120,8 @@ public class GameLauncher {
         JLabel titleLabel = new JLabel(titleIcon, JLabel.CENTER); // 중앙 정렬
         mainPanel.add(titleLabel, BorderLayout.NORTH);
 
-
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(3, 5, 15, 15)); // 행, 열, 수평간격, 수직간격
-
 
         for (int i = 1; i <= 15; i++) {
             int levelNum = i;
@@ -299,11 +297,12 @@ public class GameLauncher {
 
         gameWindow = new JPanel();
         try {
-            gameWindow.add(new GameplayPanel(256,256));
+            gameplayPanel = new GameplayPanel(448, 496);
+            gameWindow.add(gameplayPanel);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        uiPanel = new UIPanel(256, 256);
+        uiPanel = new UIPanel(256, 480);
         gameWindow.add(uiPanel);
 
         mainFrame.setContentPane(gameWindow);
