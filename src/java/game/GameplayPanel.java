@@ -76,12 +76,7 @@ public class GameplayPanel extends JPanel implements Runnable {
 
         key = new KeyHandler(this);
 
-        //game = new Game();
 
-        levelData = game.getLevelData();
-        cellsPerRow = game.getCellsPerRow();
-        cellsPerColumn = game.getCellsPerColumn();
-        cellSize = game.getCellSize();
         // Game Director Initialization
         GameDirector gameDirector = new GameDirector();
         gameDirector.setGameplayPanel(this);
@@ -91,6 +86,19 @@ public class GameplayPanel extends JPanel implements Runnable {
     public void setGame(Game game) {
         this.game = game;
 
+        levelData = game.getLevelData();
+        cellsPerRow = game.getCellsPerRow();
+        cellsPerColumn = game.getCellsPerColumn();
+        cellSize = game.getCellSize();
+
+        // 실제 필요한 크기 계산
+        int requiredWidth = cellsPerRow * cellSize;
+        int requiredHeight = cellsPerColumn * cellSize;
+
+        // 크기가 달라졌다면 조정
+        if (requiredWidth != width || requiredHeight != height) {
+            resizePanel(requiredWidth, requiredHeight);
+        }
         // Ready Overlay
         this.overlayText = "READY!";
         this.overlayActive = true;
@@ -98,6 +106,37 @@ public class GameplayPanel extends JPanel implements Runnable {
         this.finishCallback = null;
         this.firstInput = true;
     }
+
+    // 패널 크기 조정 메서드
+    private void resizePanel(int newWidth, int newHeight) {
+        this.width = newWidth;
+        this.height = newHeight;
+
+        // 이미지 버퍼 재생성
+        if (img != null) {
+            g.dispose();
+        }
+        img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        g = (Graphics2D) img.getGraphics();
+
+        // 패널 크기 조정
+        setPreferredSize(new Dimension(width, height));
+
+        // 부모 컨테이너에게 리레이아웃 요청
+        SwingUtilities.invokeLater(() -> {
+            if (getParent() != null) {
+                getParent().revalidate();
+
+                // 프레임 크기도 조정
+                Window window = SwingUtilities.getWindowAncestor(this);
+                if (window instanceof JFrame) {
+                    ((JFrame) window).pack();
+                    window.setLocationRelativeTo(null);
+                }
+            }
+        });
+    }
+
 
     // Round Cleared Overlay
     public void showRoundClearOverlay(Runnable clearFunc) {
@@ -292,6 +331,13 @@ public class GameplayPanel extends JPanel implements Runnable {
 
                 now = System.nanoTime();
             }
+        }
+    }
+    public void stopGame() {
+        running = false;
+        if (thread != null && thread.isAlive()) {
+            thread.interrupt();
+            thread = null;
         }
     }
 }

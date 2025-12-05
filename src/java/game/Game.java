@@ -12,12 +12,10 @@ import game.observer.Observer;
 import game.observer.Pujet;
 import game.map.RandomLevelGenerator;
 import game.utils.CollisionDetector;
-import game.utils.CsvReader;
 import game.utils.KeyHandler;
 import game.SkinSelector;
 
 import java.awt.*;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,8 +47,8 @@ public class Game implements Observer, Pujet {
     private static final int GAME_END_SCORE = 2000;  // Game Goal Score
 
     private List<List<String>> levelData;
-    private int cellsPerRow;
-    private int cellsPerColumn;
+    private int cellsPerRow = 28;
+    private int cellsPerColumn = 31;
     int cellSize = 8;
 
 
@@ -199,6 +197,9 @@ public class Game implements Observer, Pujet {
     // Map & Objects Initialization
     private void init() {
         List<List<String>> data = null;
+        walls.clear();  
+        objects.clear();
+        ghosts.clear();
 
 
         data = new RandomLevelGenerator().generate(cellsPerRow, cellsPerColumn);
@@ -232,14 +233,14 @@ public class Game implements Observer, Pujet {
                 } else if (dataChar.equals("b")) {
                     // 블링키 생성
                     abstractGhostFactory = new BlinkyFactory();
-                    Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize);
+                    Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize, difficultyParams);
                     ghosts.add(ghost);
                     blinky = (Blinky) ghost;
 
                     // 블링키 생성 후, 저장된 Inky가 있으면 바로 생성
                     if (inkyX != null && inkyY != null) {
                         abstractGhostFactory = new InkyFactory();
-                        Ghost inky = abstractGhostFactory.makeGhost(inkyX * cellSize, inkyY * cellSize);
+                        Ghost inky = abstractGhostFactory.makeGhost(inkyX * cellSize, inkyY * cellSize, difficultyParams);
                         ghosts.add(inky);
                         inkyX = null;  // 사용 후 초기화
                         inkyY = null;
@@ -247,7 +248,7 @@ public class Game implements Observer, Pujet {
                 } else if (dataChar.equals("p")) {
                     // 핑키는 바로 생성 (순서 상관없음)
                     abstractGhostFactory = new PinkyFactory();
-                    Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize);
+                    Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize, difficultyParams);
                     ghosts.add(ghost);
                 } else if (dataChar.equals("i")) {
                     // Inky는 일단 위치만 저장 (블링키가 아직 안 만들어졌을 수 있음)
@@ -255,8 +256,8 @@ public class Game implements Observer, Pujet {
                     inkyY = yy;
                 } else if (dataChar.equals("c")) {
                     abstractGhostFactory = new ClydeFactory();
-                    Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize);
-                    ghosts.add(ghost)
+                    Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize, difficultyParams);
+                    ghosts.add(ghost);
                 } else if (dataChar.equals(".")) {
                     objects.add(new PacGum(xx * cellSize, yy * cellSize));
                 } else if (dataChar.equals("o")) {
@@ -270,7 +271,7 @@ public class Game implements Observer, Pujet {
         // 루프 끝났는데 Inky만 저장되어 있고 블링키가 없었다면 여기서 생성
         if (inkyX != null && inkyY != null) {
             abstractGhostFactory = new InkyFactory();
-            Ghost inky = abstractGhostFactory.makeGhost(inkyX * cellSize, inkyY * cellSize);
+            Ghost inky = abstractGhostFactory.makeGhost(inkyX * cellSize, inkyY * cellSize, difficultyParams);
             ghosts.add(inky);
         }
 

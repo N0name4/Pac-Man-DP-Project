@@ -1,8 +1,6 @@
 package game;
-
 import game.levelBuilder.DifficultyParams;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -300,25 +298,13 @@ public class GameLauncher {
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         gameWindow = new JPanel();
-
-
-        Game tempGame = new Game();
-
-        int cellsPerRow = tempGame.getCellsPerRow();
-        int cellsPerColumn = tempGame.getCellsPerColumn();
-        int cellSize = tempGame.getCellSize();
-
-        int gameWidth = cellsPerRow * cellSize;
-        int gameHeight = cellsPerColumn * cellSize;
-
         try {
-            gameWindow.add(new GameplayPanel(gameWidth,gameHeight, tempGame));
+            gameWindow.add(new GameplayPanel(256,256));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        uiPanel = new UIPanel(256, gameHeight);
+        uiPanel = new UIPanel(256, 256);
         gameWindow.add(uiPanel);
-        tempGame.getPacman().registerObserver(uiPanel);
 
         mainFrame.setContentPane(gameWindow);
         mainFrame.setResizable(false);

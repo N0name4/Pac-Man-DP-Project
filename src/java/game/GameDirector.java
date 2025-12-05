@@ -89,4 +89,6 @@ public class GameDirector implements GameLifeListener {
     private void restartRound() {
         createGameForRound(currentRound);
     }
+
+    public Game getGame(){return currentGame;}
 }

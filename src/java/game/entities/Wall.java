@@ -1,5 +1,8 @@
 package game.entities;
 
+import java.awt.Graphics2D;
+import java.awt.Color;
+
 //Classe pour les murs
 public class Wall extends StaticEntity {
     public Wall(int xPos, int yPos) {

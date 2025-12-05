@@ -142,12 +142,12 @@ public abstract class Ghost extends MovingEntity {
         }
 
         //Si le fantôme est sur la case juste au dessus de sa maison, l'état est notifié afin d'appliquer la transition adéquate
-        if (xPos == 208 && yPos == 168) {
+        if (xPos == HouseExitX && yPos == HouseExitY) {
             state.outsideHouse();
         }
 
         //Si le fantôme est sur la case au milieu sa maison, l'état est notifié afin d'appliquer la transition adéquate
-        if (xPos == 208 && yPos == 200) {
+        if (xPos == HouseX && yPos == HouseY) {
             state.insideHouse();
         }
 
