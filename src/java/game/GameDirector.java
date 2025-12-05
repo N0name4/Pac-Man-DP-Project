@@ -68,7 +68,12 @@ public class GameDirector implements GameLifeListener {
         if (game != currentGame) return;
 
         // show Overlay (GameplayPanel) -> ProceedRound (Callback)
-        gameplayPanel.showRoundClearOverlay(this::proceedRound);
+        if (gameplayPanel != null) {
+            gameplayPanel.showRoundClearOverlay(this::proceedRound);
+        } else {
+            proceedRound();
+        }
+
     }
 
     @Override
@@ -88,5 +93,25 @@ public class GameDirector implements GameLifeListener {
     // Must Recreate Game because init all state and map for Game Objects
     private void restartRound() {
         createGameForRound(currentRound);
+    }
+
+    public RoundTemplateSource getRoundTemplateSource() {
+        return roundTemplateSource;
+    }
+
+    public ParameterAssembler getParameterAssembler() {
+        return parameterAssembler;
+    }
+
+    public GameplayPanel getGameplayPanel() {
+        return gameplayPanel;
+    }
+
+    public Game getCurrentGame() {
+        return currentGame;
+    }
+
+    public int getCurrentRound() {
+        return currentRound;
     }
 }

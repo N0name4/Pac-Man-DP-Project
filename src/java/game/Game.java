@@ -189,6 +189,10 @@ public class Game implements Observer, Pujet {
         return firstInput;
     }
 
+    public DifficultyParams getDifficultyParams() {
+        return difficultyParams;
+    }
+
     // Map & Objects Initialization
     private void init() {
         List<List<String>> data = null;
