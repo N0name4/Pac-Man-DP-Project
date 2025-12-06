@@ -7,13 +7,13 @@ import game.entities.ghosts.Ghost;
 import game.ghostFactory.*;
 import game.ghostStates.EatenMode;
 import game.ghostStates.FrightenedMode;
+import game.map.RandomMapGenerator;
 import game.observer.GameLifeListener;
 import game.observer.Observer;
 import game.observer.Pujet;
-import game.map.RandomLevelGenerator;
+import game.map.WFCMapGenerator;
 import game.utils.CollisionDetector;
 import game.utils.KeyHandler;
-import game.SkinSelector;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -25,6 +25,7 @@ public class Game implements Observer, Pujet {
     private List<Entity> objects = new ArrayList();
     private List<Ghost> ghosts = new ArrayList();
     private static List<Wall> walls = new ArrayList();
+    RandomMapGenerator WFCGenerator = new WFCMapGenerator();
 
     // Player Object
     private static Pacman pacman;
@@ -202,7 +203,7 @@ public class Game implements Observer, Pujet {
         ghosts.clear();
 
 
-        data = new RandomLevelGenerator().generate(cellsPerRow, cellsPerColumn);
+        data = WFCGenerator.generate(cellsPerRow, cellsPerColumn);
 
         cellsPerRow = data.get(0).size();
         cellsPerColumn = data.size();

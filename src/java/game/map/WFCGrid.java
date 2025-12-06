@@ -1,12 +1,13 @@
 package game.map;
 
 import java.util.*;
+import game.map.MapGrid;
 
 /**
  * Wave Function Collapse 알고리즘을 구현한 그리드 클래스
  * 타일 기반 맵 생성을 담당
  */
-public class WFCGrid {
+public class WFCGrid implements MapGrid {
     private final int cols, rows;
     private final TileGroup[][] groups;
     private final Random random;
@@ -25,7 +26,7 @@ public class WFCGrid {
     }
 
     /**
-     * WFC 알고리즘 실행 - 모든 타일을 확정
+     * 모든 타일을 확정
      */
     public void collapse() {
         // 경계 제약 조건 설정
@@ -134,7 +135,7 @@ public class WFCGrid {
     /**
      * 타일맵을 실제 게임 그리드로 변환 (중앙 경로 포함)
      */
-    public char[][] buildMacroGridWithCenterPath() {
+    public char[][] buildGrid() {
         int macroRows = rows * 6;
         int macroCols = (cols * 2) * 6;
         char[][] result = new char[macroRows][macroCols];
