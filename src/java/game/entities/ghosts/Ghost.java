@@ -5,6 +5,7 @@ import game.levelBuilder.DifficultyParams;
 import game.entities.MovingEntity;
 import game.ghostStates.*;
 import game.ghostStrategies.IGhostStrategy;
+import game.entities.Wall;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -31,6 +32,11 @@ public abstract class Ghost extends MovingEntity {
 
     protected IGhostStrategy strategy;
 
+    protected int HouseX;
+    protected int HouseY;
+    protected int HouseExitX;
+    protected int HouseExitY;
+
     // Difficulty Parameter
     protected final DifficultyParams difficultyParams;
 
@@ -39,6 +45,11 @@ public abstract class Ghost extends MovingEntity {
 
         // DifficultyParam init
         this.difficultyParams = difficultyParams;
+
+        this.HouseX = xPos;
+        this.HouseY = yPos;
+
+        findHouseExit();
 
         //Création des différents états des fantômes
         chaseMode = new ChaseMode(this);
@@ -114,8 +125,7 @@ public abstract class Ghost extends MovingEntity {
         if (state == frightenedMode) {
             frightenedTimer++;
 
-            // Original 60 * 7 -> Difficulty Parameter
-            if (frightenedTimer >= difficultyParams.getFrightenedTimer()) {
+            if (frightenedTimer >= (60 * 7)) {
                 state.timerFrightenedModeOver();
             }
         }
@@ -125,20 +135,19 @@ public abstract class Ghost extends MovingEntity {
         if (state == chaseMode || state == scatterMode) {
             modeTimer++;
 
-            // Original 60 * 20 , 60 * 5
-            if ((isChasing && modeTimer >= difficultyParams.getChaseTimer()) || (!isChasing && modeTimer >= difficultyParams.getScatterTimer())) {
+            if ((isChasing && modeTimer >= (60 * 20)) || (!isChasing && modeTimer >= (60 * 5))) {
                 state.timerModeOver();
                 isChasing = !isChasing;
             }
         }
 
         //Si le fantôme est sur la case juste au dessus de sa maison, l'état est notifié afin d'appliquer la transition adéquate
-        if (xPos == 208 && yPos == 168) {
+        if (xPos == HouseExitX && yPos == HouseExitY) {
             state.outsideHouse();
         }
 
         //Si le fantôme est sur la case au milieu sa maison, l'état est notifié afin d'appliquer la transition adéquate
-        if (xPos == 208 && yPos == 200) {
+        if (xPos == HouseX && yPos == HouseY) {
             state.insideHouse();
         }
 
@@ -163,4 +172,45 @@ public abstract class Ghost extends MovingEntity {
         }
 
     }
+
+    private void findHouseExit()
+    {
+    	int cellSize = 8;
+
+    	int[][] directions = {
+    	            {0, -cellSize},   // 위
+    	            {cellSize, 0},    // 오른쪽
+    	            {0, cellSize},    // 아래
+    	            {-cellSize, 0}    // 왼쪽
+    	};
+
+    	for (int[] dir : directions) {
+            int checkX = HouseX + dir[0];
+            int checkY = HouseY + dir[1];
+
+    	            // 해당 위치에 벽이 없는지 확인
+            if (!isWallAt(checkX, checkY)) {
+            	HouseExitX = checkX;
+            	HouseExitY = checkY;
+    	                return;
+    	            }
+    	        }
+
+    	        HouseExitX = HouseX;
+    	        HouseExitY = HouseY - cellSize;
+    	    }
+
+    	    private boolean isWallAt(int x, int y) {
+    	        for (Wall wall : Game.getWalls()) {
+    	            if (wall.getxPos() == x && wall.getyPos() == y) {
+    	                return true;
+    	            }
+    	        }
+    	        return false;
+    	    }
+
+    	    public int getMyHouseX() { return HouseX; }
+    	    public int getMyHouseY() { return HouseY; }
+    	    public int getMyHouseExitX() { return HouseExitX; }
+    	    public int getMyHouseExitY() { return HouseExitY; }
 }

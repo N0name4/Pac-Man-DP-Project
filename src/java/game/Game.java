@@ -10,13 +10,12 @@ import game.ghostStates.FrightenedMode;
 import game.observer.GameLifeListener;
 import game.observer.Observer;
 import game.observer.Pujet;
+import game.map.RandomLevelGenerator;
 import game.utils.CollisionDetector;
-import game.utils.CsvReader;
 import game.utils.KeyHandler;
 import game.SkinSelector;
 
 import java.awt.*;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +45,12 @@ public class Game implements Observer, Pujet {
     private int score = 0;
     private boolean finished = false;
     private static final int GAME_END_SCORE = 2000;  // Game Goal Score
+
+    private List<List<String>> levelData;
+    private int cellsPerRow = 28;
+    private int cellsPerColumn = 31;
+    int cellSize = 8;
+
 
     public Game(DifficultyParams difficultyParams){
         this.difficultyParams = difficultyParams;
@@ -196,15 +201,17 @@ public class Game implements Observer, Pujet {
     // Map & Objects Initialization
     private void init() {
         List<List<String>> data = null;
-        try {
-            data = new CsvReader().parseCsv(getClass().getClassLoader().getResource("level/level.csv").toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        walls.clear();  
+        objects.clear();
+        ghosts.clear();
 
-        int cellsPerRow = data.get(0).size();
-        int cellsPerColumn = data.size();
-        int cellSize = 8;
+
+        data = new RandomLevelGenerator().generate(cellsPerRow, cellsPerColumn);
+
+        cellsPerRow = data.get(0).size();
+        cellsPerColumn = data.size();
+
+        this.levelData = data;
 
         CollisionDetector collisionDetector = new CollisionDetector(this);
         AbstractGhostFactory abstractGhostFactory = null;
@@ -212,47 +219,66 @@ public class Game implements Observer, Pujet {
 
         long start = System.nanoTime(); //시간 측정용
 
-        for(int xx = 0 ; xx < cellsPerRow ; xx++) {
-            for(int yy = 0 ; yy < cellsPerColumn ; yy++) {
+        Integer inkyX = null;
+        Integer inkyY = null;
+        //Le niveau a une "grille", et pour chaque case du fichier csv, on affiche une entité parculière sur une case de la grille selon le caracère présent
+        for (int xx = 0; xx < cellsPerRow; xx++) {
+            for (int yy = 0; yy < cellsPerColumn; yy++) {
                 String dataChar = data.get(yy).get(xx);
                 if (dataChar.equals("x")) { //Création des murs
                     objects.add(new Wall(xx * cellSize, yy * cellSize));
-                }else if (dataChar.equals("P")) { //Création de Pacman
+                } else if (dataChar.equals("P")) { //Création de Pacman
                     pacman = new Pacman(xx * cellSize, yy * cellSize, difficultyParams);
                     pacman.setCollisionDetector(collisionDetector);
 
                     //Enregistrement des différents observers de Pacman
+                    //pacman.registerObserver(GameLauncher.getUIPanel());
                     pacman.registerObserver(this);
-                }else if (dataChar.equals("b") || dataChar.equals("p") || dataChar.equals("i") || dataChar.equals("c")) { //Création des fantômes en utilisant les différentes factories
-                    switch (dataChar) {
-                        case "b":
-                            abstractGhostFactory = new BlinkyFactory();
-                            break;
-                        case "p":
-                            abstractGhostFactory = new PinkyFactory();
-                            break;
-                        case "i":
-                            abstractGhostFactory = new InkyFactory();
-                            break;
-                        case "c":
-                            abstractGhostFactory = new ClydeFactory();
-                            break;
-                    }
-
+                } else if (dataChar.equals("b")) {
+                    // 블링키 생성
+                    abstractGhostFactory = new BlinkyFactory();
                     Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize, difficultyParams);
                     ghosts.add(ghost);
-                    if (dataChar.equals("b")) {
-                        blinky = (Blinky) ghost;
+                    blinky = (Blinky) ghost;
+
+                    // 블링키 생성 후, 저장된 Inky가 있으면 바로 생성
+                    if (inkyX != null && inkyY != null) {
+                        abstractGhostFactory = new InkyFactory();
+                        Ghost inky = abstractGhostFactory.makeGhost(inkyX * cellSize, inkyY * cellSize, difficultyParams);
+                        ghosts.add(inky);
+                        inkyX = null;  // 사용 후 초기화
+                        inkyY = null;
                     }
-                }else if (dataChar.equals(".")) { //Création des PacGums
+                } else if (dataChar.equals("p")) {
+                    // 핑키는 바로 생성 (순서 상관없음)
+                    abstractGhostFactory = new PinkyFactory();
+                    Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize, difficultyParams);
+                    ghosts.add(ghost);
+                } else if (dataChar.equals("i")) {
+                    // Inky는 일단 위치만 저장 (블링키가 아직 안 만들어졌을 수 있음)
+                    inkyX = xx;
+                    inkyY = yy;
+                } else if (dataChar.equals("c")) {
+                    abstractGhostFactory = new ClydeFactory();
+                    Ghost ghost = abstractGhostFactory.makeGhost(xx * cellSize, yy * cellSize, difficultyParams);
+                    ghosts.add(ghost);
+                } else if (dataChar.equals(".")) {
                     objects.add(new PacGum(xx * cellSize, yy * cellSize));
-                }else if (dataChar.equals("o")) { //Création des SuperPacGums
+                } else if (dataChar.equals("o")) {
                     objects.add(new SuperPacGum(xx * cellSize, yy * cellSize));
-                }else if (dataChar.equals("-")) { //Création des murs de la maison des fantômes
+                } else if (dataChar.equals("-")) {
                     objects.add(new GhostHouse(xx * cellSize, yy * cellSize));
                 }
             }
         }
+
+        // 루프 끝났는데 Inky만 저장되어 있고 블링키가 없었다면 여기서 생성
+        if (inkyX != null && inkyY != null) {
+            abstractGhostFactory = new InkyFactory();
+            Ghost inky = abstractGhostFactory.makeGhost(inkyX * cellSize, inkyY * cellSize, difficultyParams);
+            ghosts.add(inky);
+        }
+
         long end = System.nanoTime();
         long elapsedNs = end - start;
         double elapsedMs = elapsedNs / 1_000_000.0;
@@ -260,7 +286,6 @@ public class Game implements Observer, Pujet {
         System.out.println("_____________map creation time_____________");
         System.out.println("ns: " + elapsedNs);
         System.out.println(String.format("ms: %.3f", elapsedMs));
-
 
         objects.add(pacman);
         objects.addAll(ghosts);
@@ -270,5 +295,21 @@ public class Game implements Observer, Pujet {
                 walls.add((Wall) o);
             }
         }
+    }
+
+    public List<List<String>> getLevelData() {
+        return levelData;
+    }
+
+    public int getCellsPerRow() {
+        return cellsPerRow;
+    }
+
+    public int getCellsPerColumn() {
+        return cellsPerColumn;
+    }
+
+    public int getCellSize() {
+        return cellSize;
     }
 }

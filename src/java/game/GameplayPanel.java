@@ -2,6 +2,7 @@ package game;
 
 import game.utils.KeyHandler;
 
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -17,12 +18,17 @@ public class GameplayPanel extends JPanel implements Runnable {
 
     private BufferedImage img;
     private Graphics2D g;
-    private Image backgroundImage;
+//    private Image backgroundImage;
 
     private KeyHandler key;
 
     // Current Game Object
     private Game game;
+
+    private List<List<String>> levelData;
+    private int cellsPerRow;
+    private int cellsPerColumn;
+    private int cellSize;
 
     // Overlay Part
     private String overlayText = null;  // Overlay Text
@@ -41,7 +47,15 @@ public class GameplayPanel extends JPanel implements Runnable {
         setPreferredSize(new Dimension(width, height));
         setFocusable(true);
         requestFocus();
-        backgroundImage = ImageIO.read(getClass().getClassLoader().getResource("img/background.png"));
+    }
+
+    public GameplayPanel(int width, int height, Game game) throws IOException {
+        this.width = width;
+        this.height = height;
+        this.game = game;
+        setPreferredSize(new Dimension(width, height));
+        setFocusable(true);
+        requestFocus();
     }
 
     @Override
@@ -62,6 +76,7 @@ public class GameplayPanel extends JPanel implements Runnable {
 
         key = new KeyHandler(this);
 
+
         // Game Director Initialization
         GameDirector gameDirector = new GameDirector();
         gameDirector.setGameplayPanel(this);
@@ -71,6 +86,19 @@ public class GameplayPanel extends JPanel implements Runnable {
     public void setGame(Game game) {
         this.game = game;
 
+        levelData = game.getLevelData();
+        cellsPerRow = game.getCellsPerRow();
+        cellsPerColumn = game.getCellsPerColumn();
+        cellSize = game.getCellSize();
+
+        // 실제 필요한 크기 계산
+        int requiredWidth = cellsPerRow * cellSize;
+        int requiredHeight = cellsPerColumn * cellSize;
+
+        // 크기가 달라졌다면 조정
+        if (requiredWidth != width || requiredHeight != height) {
+            resizePanel(requiredWidth, requiredHeight);
+        }
         // Ready Overlay
         this.overlayText = "READY!";
         this.overlayActive = true;
@@ -78,6 +106,37 @@ public class GameplayPanel extends JPanel implements Runnable {
         this.finishCallback = null;
         this.firstInput = true;
     }
+
+    // 패널 크기 조정 메서드
+    private void resizePanel(int newWidth, int newHeight) {
+        this.width = newWidth;
+        this.height = newHeight;
+
+        // 이미지 버퍼 재생성
+        if (img != null) {
+            g.dispose();
+        }
+        img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        g = (Graphics2D) img.getGraphics();
+
+        // 패널 크기 조정
+        setPreferredSize(new Dimension(width, height));
+
+        // 부모 컨테이너에게 리레이아웃 요청
+        SwingUtilities.invokeLater(() -> {
+            if (getParent() != null) {
+                getParent().revalidate();
+
+                // 프레임 크기도 조정
+                Window window = SwingUtilities.getWindowAncestor(this);
+                if (window instanceof JFrame) {
+                    ((JFrame) window).pack();
+                    window.setLocationRelativeTo(null);
+                }
+            }
+        });
+    }
+
 
     // Round Cleared Overlay
     public void showRoundClearOverlay(Runnable clearFunc) {
@@ -179,8 +238,25 @@ public class GameplayPanel extends JPanel implements Runnable {
     //"rendu du jeu" ; on prépare ce qui va être affiché en dessinant sur une "image" : un fond et les entités du jeu au dessus
     public void render() {
         if (g != null) {
-            g.drawImage(backgroundImage, 0, 0, width, height, null);
-            if (game != null) game.render(g);
+            // 고정 배경 이미지 대신 단색으로 화면 클리어
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, width, height);
+
+         // 2) 맵 데이터 기반으로 "벽 배경" 자동 그리기
+            if (levelData != null) {
+                for (int y = 0; y < cellsPerColumn; y++) {
+                    for (int x = 0; x < cellsPerRow; x++) {
+                        String cell = levelData.get(y).get(x);
+
+                        // 'x'는 벽
+                        if ("x".equals(cell)) {
+                            g.setColor(new Color(0, 0, 150)); // 파란 벽 색 (원하는 색으로)
+                            g.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                        }
+                    }
+                }
+            }
+            game.render(g); // 엔티티(벽, 펠릿, 팩맨, 고스트)를 그린다
         }
         renderOverlay(g);
     }
@@ -250,14 +326,13 @@ public class GameplayPanel extends JPanel implements Runnable {
                 try {
                     Thread.sleep(1);
                 } catch (Exception e) {
-                    System.err.println("failed yielding thread");
+                    System.err.println("ERROR yielding thread");
                 }
 
                 now = System.nanoTime();
             }
         }
     }
-
     public void stopGame() {
         running = false;
         if (thread != null && thread.isAlive()) {

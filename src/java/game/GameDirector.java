@@ -114,4 +114,6 @@ public class GameDirector implements GameLifeListener {
     public int getCurrentRound() {
         return currentRound;
     }
+
+    public Game getGame(){return currentGame;}
 }
